@@ -23,9 +23,7 @@ export const ReduxProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <Provider store={store}>
       <PersistGate loading={<AppLoader />} persistor={persistor}>
-        <SessionProvider>
           {children}
-        </SessionProvider>
       </PersistGate>
     </Provider>
   );
