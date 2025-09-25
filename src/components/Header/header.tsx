@@ -2,7 +2,7 @@ import { Bell, Home } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-export function Topbar() {
+export function Header() {
   return (
     <header className="flex items-center justify-between  bg-card px-8 py-5 shadow-sm">
       <div className="flex items-center gap-3">

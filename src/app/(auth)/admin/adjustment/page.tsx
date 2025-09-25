@@ -365,8 +365,8 @@ const DUMMY_DATA: Product[] = [
   },
 ];
 
-export default function FulfillmentsTable() {
-  const [tab, setTab] = useState("orders");
+export default function AdjustmentTable() {
+  const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string | undefined>(undefined);
   const [sortKey, setSortKey] = useState<"name" | "status" | null>(null);
@@ -405,13 +405,31 @@ export default function FulfillmentsTable() {
   }, [filteredData, page, perPage]);
 
   const totalPages = Math.ceil(filteredData.length / perPage);
-
+  let jobsHeader = [
+    { title: "Image", key: "image" },
+    { title: "Product Name", key: "name" },
+    { title: "Product Variants", key: "variant" },
+    { title: "SKU", key: "sku" },
+    { title: "Fulfillment Point", key: "platform" },
+    { title: "Status", key: "status" },
+  ];
+  let viewHeader = [
+    { title: "Transfer ID", key: "id" },
+    { title: "Brand", key: "brand" },
+    { title: "Image", key: "image" },
+    { title: "Product Name", key: "name" },
+    { title: "SKU", key: "sku" },
+    { title: "Product Variants", key: "variant" },
+    { title: "Status", key: "status" },
+  ];
   return (
     <div className="p-6 bg-card">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Fulfillments</h1>
-          <p className="text-sm text-gray-500">View orders to be fulfilled</p>
+          <h1 className="text-2xl font-bold">Adjustment</h1>
+          <p className="text-sm text-gray-500">
+            Assign and view returned order
+          </p>
         </div>
         <Button className="bg-emerald-500 hover:bg-emerald-600 text-white">
           Export
@@ -419,24 +437,18 @@ export default function FulfillmentsTable() {
       </div>
 
       {/* Tabs */}
-      {/* <Tabs value={tab} onValueChange={setTab} className="mb-4">
-        <TabsList>
-          <TabsTrigger value="orders">View Orders</TabsTrigger>
-          <TabsTrigger value="transfer">View Transfer</TabsTrigger>
-        </TabsList>
-      </Tabs> */}
-       <div className="flex gap-6 mb-6  border-b border-gray-200">
-        {[{title: ' View Orders', key: "orders" }, {title: ' View Transfer', key: "transfer" }].map((tabValue) => (
+      <div className="flex gap-6 mb-6  border-b border-gray-200">
+        {["jobs", "view"].map((tab) => (
           <button
-            key={tabValue.key}
-            onClick={() => setTab(tabValue.key as "orders" | "transfer")}
+            key={tab}
+            onClick={() => setActiveTab(tab as "jobs" | "view")}
             className={`pb-1 text-sm font-medium ${
-              tab === tabValue.key
+              activeTab === tab
                 ? "text-black border-b-2 border-black"
                 : "text-gray-500"
             }`}
           >
-            {tabValue.key === "orders" ? "View Orders" : "View Transfer"}
+            {tab === "jobs" ? "Job" : "View"}
           </button>
         ))}
       </div>
@@ -444,14 +456,14 @@ export default function FulfillmentsTable() {
       {/* Filters */}
       <div className="flex gap-4 mb-6">
         <Input
-          placeholder="Search by SKU, Brand, or name"
+          placeholder="Search by SKU, Product Variant or name"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-xs"
         />
         <Select onValueChange={setFilter}>
           <SelectTrigger className="w-56">
-            <SelectValue placeholder="Filter by Status" />
+            <SelectValue placeholder="Filter by SKU or Fulfillment Point" />
           </SelectTrigger>
           <SelectContent>
             {Object.keys(STATUS_COLORS).map((status) => (
@@ -470,28 +482,22 @@ export default function FulfillmentsTable() {
             <TableHead>
               <input type="checkbox" />
             </TableHead>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Brand</TableHead>
-            <TableHead>Platform</TableHead>
-            <TableHead>Image</TableHead>
-            <TableHead>
-              <button
-                onClick={() => setSortKey("name")}
-                className="flex items-center gap-1"
-              >
-                Product Name <ArrowUpDown size={14} />
-              </button>
-            </TableHead>
-            <TableHead>SKU</TableHead>
-            <TableHead>Product Variants</TableHead>
-            <TableHead>
-              <button
-                onClick={() => setSortKey("status")}
-                className="flex items-center gap-1"
-              >
-                Status <ArrowUpDown size={14} />
-              </button>
-            </TableHead>
+
+            {(activeTab === "view" ? viewHeader : jobsHeader).map((header) => (
+              <TableHead key={header.key}>
+                {/* agar sort button dalna hai */}
+                {header.key === "status" ? (
+                  <button
+                    onClick={() => setSortKey("status")}
+                    className="flex items-center gap-1"
+                  >
+                    {header.title} <ArrowUpDown size={14} />
+                  </button>
+                ) : (
+                  header.title
+                )}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -500,41 +506,36 @@ export default function FulfillmentsTable() {
               <TableCell>
                 <input type="checkbox" />
               </TableCell>
-              <TableCell>{item.id}</TableCell>
-              <TableCell>{item.brand}</TableCell>
-              <TableCell>
-                <Image
-                  width={70}
-                  height={40}
-                  src={"/images/platform.svg"}
-                  alt={item.platform}
-                  className=" rounded-md "
-                />
-              </TableCell>
-              <TableCell>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-10 w-10 rounded-md object-cover"
-                />
-              </TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.sku}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Badge>{item.variantSize}</Badge>
-                  <Badge variant="outline">{item.variantColor}</Badge>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    STATUS_COLORS[item.status]
-                  }`}
-                >
-                  {item.status}
-                </span>
-              </TableCell>
+
+              {(activeTab === "view" ? viewHeader : jobsHeader).map(
+                (header) => (
+                  <TableCell key={header.key}>
+                    {/* conditionally render based on key */}
+                    {header.key === "image" ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-10 w-10 rounded-md object-cover"
+                      />
+                    ) : header.key === "variant" ? (
+                      <div className="flex gap-2">
+                        <Badge>{item.variantSize}</Badge>
+                        <Badge variant="outline">{item.variantColor}</Badge>
+                      </div>
+                    ) : header.key === "status" ? (
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          STATUS_COLORS[item.status]
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    ) : (
+                      item[header.key as keyof Product] ?? "-"
+                    )}
+                  </TableCell>
+                )
+              )}
             </TableRow>
           ))}
         </TableBody>
