@@ -1,62 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
+
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
-  const role = request.cookies.get("role")?.value; // e.g. "ADMIN", "WORKER"
- 
+  let role = request.cookies.get("role")?.value; // e.g. "ADMIN", "WORKER"
   const { pathname } = request.nextUrl;
+
+  // Normalize role
+  role = role ? role.toUpperCase() : undefined;
+
+  // 🔹 Debug Logs
+  console.log("🟢 Middleware Debug:");
+  console.log("Pathname:", pathname);
+  console.log("Token:", token ? "✅ present" : "❌ missing");
+  console.log("Role (raw):", request.cookies.get("role")?.value);
+  console.log("Role (normalized):", role);
 
   const publicPaths = ["/", "/login", "/forgot-password", "/reset-password"];
   const isPublicRoute = publicPaths.includes(pathname);
 
   // ✅ If no token and trying to access private route → redirect to login
   if (!token && !isPublicRoute) {
+    console.log("➡️ Redirecting: no token, private route");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // ✅ If token exists but role missing → force logout
   if (token && !role) {
+    console.log("➡️ Redirecting: token present but role missing");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // ✅ If "/" route → redirect based on role
-  if (pathname === "/") {
-    if (token && role) {
-      return NextResponse.redirect(
-        new URL(`/${role.toLowerCase()}`, request.url)
-      );
-    }
-    return NextResponse.next();
-  }
-
-  // ✅ Role → Route Mapping
-  const roleRoutes: Record<string, string> = {
-    ADMIN: "/admin/directors",
-    DIRECTOR: "/director/fulfillments",
+  // ✅ Role → Section Prefix (whole section allowed)
+  const rolePrefixes: Record<string, string> = {
+    ADMIN: "/admin",
+    DIRECTOR: "/director",
     MANAGER: "/manager",
     WORKER: "/worker",
     CLIENT: "/client",
   };
 
-  // ✅ Agar user logged in hai aur public route par gaya (login, reset, etc.)
+  // ✅ Default Dashboard Routes
+  const dashboards: Record<string, string> = {
+    ADMIN: "/admin/directors",
+    DIRECTOR: "/director/fulfillments",
+    MANAGER: "/manager",
+    WORKER: "/worker",
+    CLIENT: "/client/products",
+  };
+
+  // ✅ If "/" route → redirect to dashboard
+  if (pathname === "/") {
+    if (token && role) {
+      const redirectPath = dashboards[role] || "/login";
+      console.log(`➡️ Redirecting "/" to dashboard: ${redirectPath}`);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
+    }
+    console.log("➡️ Public root route accessed, continuing...");
+    return NextResponse.next();
+  }
+
+  // ✅ Logged-in user on public route → redirect to dashboard
   if (token && isPublicRoute) {
-    const redirectPath = roleRoutes[role as keyof typeof roleRoutes] || "/";
+    const redirectPath = dashboards[role] || "/login";
+    console.log(`➡️ Redirecting public route to dashboard: ${redirectPath}`);
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
-  // ✅ Private route protection based on role
+  // ✅ Private route protection
   if (role) {
-    const allowedPrefix = roleRoutes[role as keyof typeof roleRoutes];
-    if (
-      allowedPrefix &&
-      pathname.startsWith("/") &&
-      !pathname.startsWith(allowedPrefix)
-    ) {
-      // ❌ Wrong role route → redirect to their own dashboard
-      return NextResponse.redirect(new URL(allowedPrefix, request.url));
+    const allowedPrefix = rolePrefixes[role];
+    if (allowedPrefix && !pathname.startsWith(allowedPrefix)) {
+      const redirectPath = dashboards[role] || "/login";
+      console.log(
+        `❌ Unauthorized access: "${pathname}" not allowed for ${role}, redirecting to ${redirectPath}`
+      );
+      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
   }
 
-  // ✅ Otherwise continue
+  console.log("✅ Access granted:", pathname);
   return NextResponse.next();
 }
 

@@ -39,13 +39,31 @@ const listSidebarUserPermission = [
       },
     ],
   },
+
+  {
+    role :"Client",
+    permissions: [
+      {
+        title: "Menu",
+        items: [
+          { label: "Products", icon: Layers, active: false },
+          { label: "Inventory", icon: Package, active: false },
+          { label: "Fulfillments", icon: Package, active: false },
+          { label: "Return", icon: Package, active: false },
+        ],
+      },
+      {
+        title: "Others",
+        items: [{ label: "Profile Settings", icon: Settings, active: false }],
+      },
+    ]
+  }
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
-  console.log(pathname.split("/"));
-  const userRole = 'Admin'; // Example role, this should come from your auth logic
+  const userRole = 'Client'; // Example role, this should come from your auth logic
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar max-h-[calc(80vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">
