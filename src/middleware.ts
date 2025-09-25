@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const role = request.cookies.get("role")?.value; // e.g. "ADMIN", "WORKER"
+ 
   const { pathname } = request.nextUrl;
 
   const publicPaths = ["/", "/login", "/forgot-password", "/reset-password"];
@@ -29,8 +30,8 @@ export function middleware(request: NextRequest) {
 
   // ✅ Role → Route Mapping
   const roleRoutes: Record<string, string> = {
-    ADMIN: "/admin/fulfillments",
-    DIRECTOR: "/director",
+    ADMIN: "/admin/directors",
+    DIRECTOR: "/director/fulfillments",
     MANAGER: "/manager",
     WORKER: "/worker",
     CLIENT: "/client",

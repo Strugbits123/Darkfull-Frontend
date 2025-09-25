@@ -3,20 +3,7 @@ import { Layers, Package, Settings, LogOut } from "lucide-react";
 import { usePathname } from "next/dist/client/components/navigation";
 import Link from "next/link";
 
-const menuSections = [
-  {
-    title: "Menu",
-    items: [
-      { label: "Inventory", icon: Layers, active: false },
-      { label: "Adjustment", icon: Package, active: false },
-      { label: "Fulfillments", icon: Package, active: true },
-    ],
-  },
-  {
-    title: "Others",
-    items: [{ label: "Setting", icon: Settings, active: false }],
-  },
-];
+
 
 const listSidebarUserPermission = [
   {
@@ -58,7 +45,7 @@ export function SidebarNav() {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
   console.log(pathname.split("/"));
-  const userRole = "Admin"; // Example role, this should come from your auth logic
+  const userRole = 'Admin'; // Example role, this should come from your auth logic
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar max-h-[calc(80vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">
@@ -66,7 +53,7 @@ export function SidebarNav() {
           (role) =>
             role.role === userRole &&
             role.permissions.map((menu) => (
-              <div>
+              <div key={menu.title} >
                 <h4 className="text-[14px] mb-3 font-semibold text-muted-foreground">
                   {menu.title}
                 </h4>
@@ -85,7 +72,7 @@ export function SidebarNav() {
                       )}
                     >
                       <section.icon className="h-7 w-7" aria-hidden="true" />
-                      <span className="text-lg">{section.label}</span>
+                      <span className="text-[16px]">{section.label}</span>
                     </Link>
                   </div>
                 ))}
