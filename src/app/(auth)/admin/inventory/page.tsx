@@ -87,9 +87,9 @@ export default function InventoryTable() {
     <div className="p-6 bg-card">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Adjustment</h1>
+          <h1 className="text-2xl font-bold">Inventory</h1>
           <p className="text-sm text-gray-500">
-            Assign and view returned order
+            Manage and view inventory items
           </p>
         </div>
         <Button className="bg-emerald-500 hover:bg-emerald-600 text-white">
