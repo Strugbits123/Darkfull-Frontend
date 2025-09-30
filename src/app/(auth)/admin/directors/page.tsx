@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye } from "lucide-react";
+import Link from "next/link";
 
 const Directors = () => {
   // Define headers with keys
@@ -48,9 +49,9 @@ const Directors = () => {
           <span className="text-2xl font-bold">Directors Page</span>
           <span>Manage Director Profile</span>
         </div>
-        <Button variant="default" className="bg-[#004370] h-13 w-80">
+        <Link href="/admin/directors/director" className="bg-[#004370] h-13 w-80 text-white flex items-center justify-center rounded-md hover:bg-[#004370]">
           Add Director
-        </Button>
+        </Link>
       </div>
 
 <div className="mt-10">
