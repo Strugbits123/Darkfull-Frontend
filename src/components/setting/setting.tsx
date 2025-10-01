@@ -1,46 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const SettingComponent = ({ role }: { role: string }) => {
   let settingList = [
     {
       role: "Admin",
-      setting: [ {
-          title: "Preference",
-          icon: (
-            <Image
-              src="/images/icons/settings.svg"
-              alt="preference"
-              width={80}
-              height={80}
-            />
-          ),
-        },
-        {
-          title: "Users",
-          icon: (
-            <Image
-              src="/images/icons/groupUser.svg"
-              alt="group user"
-              width={80}
-              height={80}
-            />
-          ),
-        },
-         {
-          title: "Integrations",
-          icon: (
-            <Image
-              src="/images/icons/integration.svg"
-              alt="group user"
-              width={80}
-              height={80}
-            />
-          ),
-        },
-    ],
-    },
-    {
-      role: "Director",
       setting: [
         {
           title: "Preference",
@@ -65,10 +29,38 @@ const SettingComponent = ({ role }: { role: string }) => {
           ),
         },
         {
-          title: "Fulfillments point",
+          title: "Integrations",
           icon: (
             <Image
-              src="/images/icons/cargo.svg"
+              src="/images/icons/integration.svg"
+              alt="group user"
+              width={80}
+              height={80}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      role: "Director",
+      setting: [
+        {
+          title: "Preference",
+          icon: (
+            <Image
+              src="/images/icons/settings.svg"
+              alt="preference"
+              width={80}
+              height={80}
+            />
+          ),
+        },
+        {
+          title: "Users",
+          href: "/director/setting/manager",
+          icon: (
+            <Image
+              src="/images/icons/groupUser.svg"
               alt="group user"
               width={80}
               height={80}
@@ -76,10 +68,12 @@ const SettingComponent = ({ role }: { role: string }) => {
           ),
         },
         {
-          title: "Integrations",
+          title: "Fulfillments point",
+          href: "/director/setting/fulfillment",
+
           icon: (
             <Image
-              src="/images/icons/integration.svg"
+              src="/images/icons/cargo.svg"
               alt="group user"
               width={80}
               height={80}
@@ -118,7 +112,9 @@ const SettingComponent = ({ role }: { role: string }) => {
               >
                 <div className="flex flex-col items-center justify-center space-y-2">
                   {items.icon}
-                  <span className="text-lg font-medium">{items.title}</span>
+                  <Link href={`${items.href}`}>
+                    <span className="text-lg font-medium">{items.title}</span>
+                  </Link>
                 </div>
               </div>
             ))

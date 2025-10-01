@@ -71,7 +71,7 @@ export default function FulfillmentsTable() {
   const totalPages = Math.ceil(filteredData.length / perPage);
 
   return (
-    <div className="p-6 bg-card">
+    <div className="px-g-card ">
       <AssignModal
         open={openAssignModal.open}
         setOpenModal={() =>
@@ -195,7 +195,7 @@ export default function FulfillmentsTable() {
               </TableCell>
               <TableCell>{item.sku}</TableCell>
 
-              <TableCell className="text-2xl text-center">
+              <TableCell className="text-lg text-center">
                 {item.quantity}
               </TableCell>
 
@@ -215,24 +215,10 @@ export default function FulfillmentsTable() {
 
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
-        <p className="text-sm text-gray-500">
-          Showing {(page - 1) * perPage + 1} to{" "}
-          {Math.min(page * perPage, filteredData.length)} of{" "}
-          {filteredData.length} results
-        </p>
+       <div>
+
+       </div>
         <div className="flex items-center gap-4">
-          <Select onValueChange={(val) => setPerPage(Number(val))}>
-            <SelectTrigger className="w-28">
-              <SelectValue placeholder={`${perPage} per page`} />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 25, 50].map((size) => (
-                <SelectItem key={size} value={String(size)}>
-                  {size} per page
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"

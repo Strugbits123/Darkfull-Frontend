@@ -25,6 +25,7 @@ import Image from "next/image";
 import { title } from "process";
 import { DUMMY_DATA, Product } from "@/constant/product";
 import AdjustmentModal from "@/components/modal/adjustmentModal/adjustModal";
+import DataTable from "@/components/InventoryTable/dataTable";
 
 const STATUS_COLORS: Record<string, string> = {
   Returned: "bg-orange-200 text-orange-800",
@@ -37,63 +38,96 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdjustmentTable() {
-  const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<string | undefined>(undefined);
-  const [sortKey, setSortKey] = useState<"name" | "status" | null>(null);
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(8);
+  const [activeTab, setActiveTab] = useState<"jobs" | "view">("jobs");
   const [showModal, setShowModal] = useState(false);
+  const columnsJobs = [
+    {
+      key: "image",
+      title: "Image",
+      render: (row: any) => (
+        <img
+          src={row.image}
+          alt={row.name}
+          className="h-10 w-10 rounded-md object-cover"
+        />
+      ),
+    },
+    { key: "name", title: "Product Name", sortable: true },
+    {
+      key: "variant",
+      title: "Variants",
+      render: (row: any) => (
+        <div className="flex gap-2">
+          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">{row.variantSize}</Badge>
+          <Badge variant="outline">{row.variantColor}</Badge>
+        </div>
+      ),
+    },
+    { key: "sku", title: "SKU", sortable: true },
+    { key: "platform", title: "Fulfillment Point" },
 
-  // 🔍 Filtering + Searching + Sorting
-  const filteredData = useMemo(() => {
-    let data = [...DUMMY_DATA];
-
-    if (search) {
-      data = data.filter(
-        (d) =>
-          d.name.toLowerCase().includes(search.toLowerCase()) ||
-          d.sku.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    if (filter) {
-      data = data.filter((d) => d.status === filter);
-    }
-
-    if (sortKey) {
-      data = data.sort((a, b) =>
-        a[sortKey].toString().localeCompare(b[sortKey].toString())
-      );
-    }
-
-    return data;
-  }, [search, filter, sortKey]);
-
-  // 📄 Pagination
-  const paginatedData = useMemo(() => {
-    const start = (page - 1) * perPage;
-    return filteredData.slice(start, start + perPage);
-  }, [filteredData, page, perPage]);
-
-  const totalPages = Math.ceil(filteredData.length / perPage);
-  let jobsHeader = [
-    { title: "Image", key: "image" },
-    { title: "Product Name", key: "name" },
-    { title: "Product Variants", key: "variant" },
-    { title: "SKU", key: "sku" },
-    { title: "Fulfillment Point", key: "platform" },
-    { title: "Status", key: "status" },
+    {
+      key: "action",
+      title: "Action",
+      sortable: true,
+      render: () => (
+        <Button
+          onClick={() => setShowModal(true)}
+          variant="outline"
+          className="bg-yellow-400 hover:bg-yellow-500 text-white"
+        >
+          Assign
+        </Button>
+      ),
+    },
   ];
-  let viewHeader = [
-    { title: "Transfer ID", key: "id" },
-    { title: "Brand", key: "brand" },
-    { title: "Image", key: "image" },
-    { title: "Product Name", key: "name" },
-    { title: "SKU", key: "sku" },
-    { title: "Product Variants", key: "variant" },
-    { title: "Status", key: "status" },
+  const columnsView = [
+    {
+      key: "id",
+      title: "Transfer ID",
+      render: (row: any) => <span className="text-lg">{row.id}</span>,
+    },
+    {
+      key: "brandName",
+      title: "Brand",
+      sortable: true,
+      render: (row: any) => <span>{row.name}</span>,
+    },
+    {
+      key: "image",
+      title: "Image",
+      render: (row: any) => (
+        <img
+          src={row.image}
+          alt={row.name}
+          className="h-10 w-10 rounded-md object-cover"
+        />
+      ),
+    },
+    {
+      key: "name",
+      title: "Product Name",
+      sortable: true,
+      render: (row: any) => <span>{row.name}</span>,
+    },
+    { key: "sku", title: "SKU", sortable: true },
+    { key: "platform", title: "Fulfillment Point" },
+    {
+      key: "status",
+      title: "Status",
+      sortable: true,
+      render: (row: any) => (
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${
+            STATUS_COLORS[row.status]
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
   ];
+
   return (
     <div className="p-6 bg-card">
       <div className="flex items-center justify-between mb-6">
@@ -103,9 +137,7 @@ export default function AdjustmentTable() {
             Assign and view returned order
           </p>
         </div>
-        <Button className="bg-emerald-500 hover:bg-emerald-600 text-white">
-          Export
-        </Button>
+       
       </div>
 
       <AdjustmentModal open={showModal} setValue={setShowModal} />
@@ -126,144 +158,13 @@ export default function AdjustmentTable() {
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        <Input
-          placeholder="Search by SKU, Product Variant or name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
-        />
-        <Select onValueChange={setFilter}>
-          <SelectTrigger className="w-56">
-            <SelectValue placeholder="Filter by SKU or Fulfillment Point" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(STATUS_COLORS).map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <input type="checkbox" />
-            </TableHead>
-
-            {(activeTab === "view" ? viewHeader : jobsHeader).map((header) => (
-              <TableHead key={header.key}>
-                {/* agar sort button dalna hai */}
-                {header.key === "status" ? (
-                  <button
-                    onClick={() => setSortKey("status")}
-                    className="flex items-center gap-1"
-                  >
-                    {header.title} <ArrowUpDown size={14} />
-                  </button>
-                ) : (
-                  header.title
-                )}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedData.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <input type="checkbox" />
-              </TableCell>
-
-              {(activeTab === "view" ? viewHeader : jobsHeader).map(
-                (header) => (
-                  <TableCell key={header.key}>
-                    {/* conditionally render based on key */}
-                    {header.key === "image" ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-10 w-10 rounded-md object-cover"
-                      />
-                    ) : header.key === "variant" ? (
-                      <div className="flex gap-2">
-                        <Badge>{item.variantSize}</Badge>
-                        <Badge variant="outline">{item.variantColor}</Badge>
-                      </div>
-                    ) : header.key === "status" ? (
-                      activeTab === "view" ? (
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            STATUS_COLORS[item.status]
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          className="bg-yellow-400 hover:bg-yellow-400 text-white"
-                          onClick={() => setShowModal(true)}
-                        >
-                          Assign
-                        </Button>)
-                    ) : (
-                      item[header.key as keyof Product] ?? "-"
-                    )}
-                  </TableCell>
-                )
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between mt-4">
-        <p className="text-sm text-gray-500">
-          Showing {(page - 1) * perPage + 1} to{" "}
-          {Math.min(page * perPage, filteredData.length)} of{" "}
-          {filteredData.length} results
-        </p>
-        <div className="flex items-center gap-4">
-          <Select onValueChange={(val) => setPerPage(Number(val))}>
-            <SelectTrigger className="w-28">
-              <SelectValue placeholder={`${perPage} per page`} />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 25, 50].map((size) => (
-                <SelectItem key={size} value={String(size)}>
-                  {size} per page
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >
-              <ChevronLeft size={16} />
-            </Button>
-            <span>{page}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-            >
-              <ChevronRight size={16} />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <DataTable
+        showExportButton={activeTab === "jobs" ? false : true}
+        columns={activeTab === "jobs" ? columnsJobs : columnsView}
+        data={DUMMY_DATA}
+        searchKeys={["name", "sku"]}
+        filterOptions={Object.keys(STATUS_COLORS)}
+      />
     </div>
   );
 }
