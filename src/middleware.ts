@@ -37,6 +37,7 @@ export function middleware(request: NextRequest) {
     MANAGER: "/manager",
     WORKER: "/worker",
     CLIENT: "/client",
+    SUPER_ADMIN: "/superAdmin",
   };
 
   // ✅ Default Dashboard Routes
@@ -46,6 +47,7 @@ export function middleware(request: NextRequest) {
     MANAGER: "/manager",
     WORKER: "/worker",
     CLIENT: "/client/products",
+    SUPER_ADMIN: "/superAdmin/store",
   };
 
   // ✅ If "/" route → redirect to dashboard
@@ -93,5 +95,6 @@ export const config = {
     "/director/:path*",
     "/manager/:path*",
     "/worker/:path*",
+    '/superAdmin/:path*',
   ],
 };

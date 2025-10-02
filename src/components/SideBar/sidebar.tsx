@@ -5,6 +5,20 @@ import Link from "next/link";
 
 const listSidebarUserPermission = [
   {
+    role: "SuperAdmin",
+    permissions: [
+      {
+        title: "Menu",
+        items: [{ label: "Stores", icon: Layers, active: false }],
+      },
+      {
+        title: "Others",
+        items: [{ label: "Integration", icon: Settings, active: false }],
+      },
+    ],
+  },
+
+  {
     role: "Director",
     permissions: [
       {
@@ -58,7 +72,7 @@ const listSidebarUserPermission = [
       },
     ],
   },
-  
+
   {
     role: "Manager",
     permissions: [
@@ -73,12 +87,12 @@ const listSidebarUserPermission = [
       },
       {
         title: "Others",
-        link:"/manager/profile",
+        link: "/manager/profile",
         items: [{ label: "Profile Settings", icon: Settings, active: false }],
       },
     ],
   },
-   {
+  {
     role: "Worker",
     permissions: [
       {
@@ -90,13 +104,13 @@ const listSidebarUserPermission = [
         ],
       },
     ],
-  }
+  },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
-  const userRole = "Worker"; // Example role, this should come from your auth logic
+  const userRole = "SuperAdmin"; // Example role, this should come from your auth logic
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar min-h-[calc(70vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">
@@ -112,9 +126,12 @@ export function SidebarNav() {
                   <div key={section.label} className="space-y-3">
                     <Link
                       key={section.label}
-                      href={menu?.link || `/${
-                        pathname.split("/")[1]
-                      }/${section.label.toLowerCase()}`}
+                      href={
+                        menu?.link ||
+                        `/${
+                          pathname.split("/")[1]
+                        }/${section.label.toLowerCase()}`
+                      }
                       className={cn(
                         "flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
                         section.label.toLowerCase() === currentPath

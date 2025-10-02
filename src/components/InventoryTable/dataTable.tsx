@@ -40,6 +40,8 @@ type DataTableProps<T> = {
     showExportButton?: boolean;
   perPageOptions?: number[];
   showCustomButton?: React.ReactNode;
+  placeholder?: string;
+  showFilterByStatus?: boolean;
 };
 
 export default function DataTable<T extends Record<string, any>>({
@@ -48,7 +50,9 @@ export default function DataTable<T extends Record<string, any>>({
   searchKeys = [],
   filterOptions = [],
   showExportButton = true,
+  placeholder ="",
   perPageOptions = [5, 10, 25, 50],
+  showFilterByStatus = true,
   showCustomButton,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
@@ -101,7 +105,7 @@ export default function DataTable<T extends Record<string, any>>({
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           {searchKeys.length > 0 && (
             <Input
-              placeholder="Search in the table..."
+              placeholder={placeholder !== "" ? placeholder : "Search in the table..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-xs w-full sm:w-64"
