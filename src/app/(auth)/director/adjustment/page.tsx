@@ -23,19 +23,11 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import { title } from "process";
-import { DUMMY_DATA, Product } from "@/constant/product";
+import { DUMMY_DATA, Product, STATUS_COLORS } from "@/constant/product";
 import AdjustmentModal from "@/components/modal/adjustmentModal/adjustModal";
 import DataTable from "@/components/InventoryTable/dataTable";
 
-const STATUS_COLORS: Record<string, string> = {
-  Returned: "bg-orange-200 text-orange-800",
-  Shipped: "bg-blue-200 text-blue-800",
-  Picked: "bg-gray-300 text-gray-800",
-  Packed: "bg-gray-200 text-gray-800",
-  New: "bg-yellow-200 text-yellow-800",
-  Delivered: "bg-green-200 text-green-800",
-  Cancelled: "bg-red-200 text-red-800",
-};
+
 
 export default function AdjustmentTable() {
   const [activeTab, setActiveTab] = useState<"jobs" | "view">("jobs");

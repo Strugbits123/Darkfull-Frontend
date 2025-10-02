@@ -4,20 +4,12 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { DUMMY_DATA } from "@/constant/product";
+import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 import AssignModal from "@/components/modal/AssignModal/assignModal";
 import AssignInventory from "@/components/modal/assignInventory/assignInventory";
 
-const STATUS_COLORS: Record<string, string> = {
-  Returned: "bg-orange-200 text-orange-800",
-  Shipped: "bg-blue-200 text-blue-800",
-  Picked: "bg-gray-300 text-gray-800",
-  Packed: "bg-gray-200 text-gray-800",
-  New: "bg-yellow-200 text-yellow-800",
-  Delivered: "bg-green-200 text-green-800",
-  Cancelled: "bg-red-200 text-red-800",
-};
+
 
 export default function InventoryTable() {
   const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");

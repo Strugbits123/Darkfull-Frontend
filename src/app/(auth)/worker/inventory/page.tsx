@@ -10,6 +10,7 @@ import AssignModal from "@/components/modal/AssignModal/assignModal";
 import AssignInventory from "@/components/modal/assignInventory/assignInventory";
 
 
+
 export default function InventoryTable() {
   const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");
   const columnsJobs = [
@@ -30,7 +31,9 @@ export default function InventoryTable() {
       title: "Variants",
       render: (row: any) => (
         <div className="flex gap-2">
-         <Badge className="bg-[#DBEAFE] text-black rounded-2xl">{row.variantSize}</Badge>
+          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
+            {row.variantSize}
+          </Badge>
           <Badge variant="outline">{row.variantColor}</Badge>
         </div>
       ),
@@ -105,6 +108,7 @@ export default function InventoryTable() {
       title: "Status",
       sortable: true,
       render: (row: any) => (
+        
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -138,19 +142,11 @@ export default function InventoryTable() {
         </div>
       </div>
       <div className="flex gap-6 mb-`  border-b border-gray-200">
-        {["jobs", "view"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as "jobs" | "view")}
-            className={`pb-1 text-sm font-medium ${
-              activeTab === tab
-                ? "text-black border-b-2 border-black"
-                : "text-gray-500"
-            }`}
-          >
-            {tab === "jobs" ? "Job" : "View"}
-          </button>
-        ))}
+        <button
+          className={`pb-1 text-sm font-medium ${"text-black border-b-2 border-black"}`}
+        >
+          {"Job"}
+        </button>
       </div>
 
       <DataTable

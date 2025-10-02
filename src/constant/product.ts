@@ -7,7 +7,7 @@ export type Product = {
   sku: string;
   variantSize: string;
   variantColor: string;
-    quantity?: number;
+  quantity?: number;
   status:
     | "Returned"
     | "Shipped"
@@ -15,24 +15,77 @@ export type Product = {
     | "Packed"
     | "New"
     | "Delivered"
+    | "Received"
+    | "Stocked"
+    | "In_Transit"
     | "Cancelled";
 };
 
-
-
 export const STATUS_COLORS: Record<string, string> = {
-  Returned: "bg-orange-200 text-orange-800",
-  Shipped: "bg-blue-200 text-blue-800",
-  Picked: "bg-gray-300 text-gray-800",
-  Packed: "bg-gray-200 text-gray-800",
-  New: "bg-yellow-200 text-yellow-800",
-  Delivered: "bg-green-200 text-green-800",
-  Cancelled: "bg-red-200 text-red-800",
+  Returned: "bg-orange-200 text-[#000000]",
+  Shipped: "bg-blue-200 text-[#000000]",
+  Picked: "bg-gray-300 text-[#000000]",
+  Packed: "bg-gray-200 text-[#000000]",
+  New: "bg-[#FFE9AE] text-[#000000]",
+  Delivered: "bg-[#DCFCE7] text-[#000000]",
+  Cancelled: "bg-[#FF9292] text-[#000000]",
+  Received: "bg-[#CBCBCB] text-[#000000]",
+  In_Transit: "bg-[#B2EAFF] text-[#000000]",
+  Stocked: "bg-[#DCFCE7] text-[#000000]",
 };
-
 
 // Dummy data
 export const DUMMY_DATA: Product[] = [
+  {
+    id: "10454646",
+    brand: "Becomfy",
+    platform: "Salla",
+    image: "https://via.placeholder.com/40",
+    name: "Premium Wireless Headphones",
+    sku: "WH-001-BLK",
+    variantSize: "S",
+    variantColor: "White",
+    status: "Received",
+    quantity: 120,
+  },
+  {
+    id: "10454646",
+    brand: "Becomfy",
+    platform: "Salla",
+    image: "https://via.placeholder.com/40",
+    name: "Premium Wireless Headphones",
+    sku: "WH-001-BLK",
+    variantSize: "S",
+    variantColor: "White",
+    status: "New",
+    quantity: 120,
+  },
+  {
+    id: "9988",
+    brand: "Becomfy",
+    platform: "Salla",
+    image: "https://via.placeholder.com/40",
+    name: "Premium Wireless Headphones",
+    sku: "WH-001-K",
+    variantSize: "88S",
+    variantColor: "White",
+    status: "Stocked",
+    quantity: 120,
+  },
+
+  {
+    id: "10454646",
+    brand: "Becomfy",
+    platform: "Salla",
+    image: "https://via.placeholder.com/40",
+    name: "Premium Wireless Headphones",
+    sku: "WH-001-BLK",
+    variantSize: "S",
+    variantColor: "White",
+    status: "In_Transit",
+    quantity: 120,
+  },
+
   {
     id: "10454646",
     brand: "Becomfy",
@@ -140,7 +193,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "S",
     variantColor: "White",
     status: "Returned",
-    quantity:1
+    quantity: 1,
   },
   {
     id: "34567890",
@@ -152,7 +205,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "M",
     variantColor: "White",
     status: "Shipped",
-    quantity:44
+    quantity: 44,
   },
   {
     id: "56789012",
@@ -164,7 +217,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "L",
     variantColor: "White",
     status: "Delivered",
-    quantity:99
+    quantity: 99,
   },
   {
     id: "89012345",
@@ -188,7 +241,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "S",
     variantColor: "White",
     status: "Returned",
-    quantity:3
+    quantity: 3,
   },
   {
     id: "34567890",
@@ -200,7 +253,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "M",
     variantColor: "White",
     status: "Shipped",
-    quantity:300
+    quantity: 300,
   },
   {
     id: "56789012",
@@ -212,7 +265,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "L",
     variantColor: "White",
     status: "Delivered",
-    quantity:22
+    quantity: 22,
   },
   {
     id: "89012345",
@@ -343,7 +396,7 @@ export const DUMMY_DATA: Product[] = [
     variantSize: "M",
     variantColor: "White",
     status: "Shipped",
-    quantity:30,
+    quantity: 30,
   },
   {
     id: "56789012",
