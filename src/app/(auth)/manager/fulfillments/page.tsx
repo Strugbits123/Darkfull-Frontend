@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
+import AssignWorker from "@/components/modal/assignWorker/page";
 
 export default function FulfillmentsTable() {
   const columns = [
@@ -84,9 +85,22 @@ export default function FulfillmentsTable() {
         </span>
       ),
     },
+    {
+      key: "action",
+      title: "Assign Task",
+      sortable: true,
+      render: (row: any) => (
+        <Button className="bg-[#20A29A] hover:bg-[#20A29A] text-white" onClick={() => setAssignWorkerModal(true)}>
+          Assign Task
+        </Button>
+      ),
+    },
   ];
+  const [assignWorkerModal, setAssignWorkerModal] = useState(false);
   return (
     <div className="p-6 bg-card">
+      
+      <AssignWorker open={assignWorkerModal}  workers={[]} setOpenModal={() => setAssignWorkerModal(false)} />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Fulfillments</h1>
@@ -97,7 +111,7 @@ export default function FulfillmentsTable() {
         <button
           className={`pb-1 text-sm font-medium ${"text-black border-b-2 border-black"}`}
         >
-          Jobs
+          View Orders
         </button>
       </div>
 
@@ -107,15 +121,7 @@ export default function FulfillmentsTable() {
         searchKeys={["name", "sku"]}
         showExportButton={true}
         showCustomButton={
-          <div>
-            <Button
-              variant={"outline"}
-              className="w-50 mr-5 bg-[#BBF7D0] text-[#15803D] hover:bg-[#BBF7D0] hover:text-[#15803D] "
-            >
-              <span className="text-green-700 animate-pulse text-1xl">●</span>{" "}
-              Connected to Salla
-            </Button>
-          </div>
+         null
         }
       />
     </div>

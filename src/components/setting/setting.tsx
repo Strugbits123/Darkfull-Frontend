@@ -92,7 +92,34 @@ const SettingComponent = ({ role }: { role: string }) => {
     },
     {
       role: "Manager",
-      setting: [],
+ setting: [
+       
+        {
+          title: "Warehouse setting",
+          href: "/manager/setting/manager",
+          icon: (
+            <Image
+               src="/images/icons/cargo.svg"
+              alt="group user"
+              width={80}
+              height={80}
+            />
+          ),
+        },
+        {
+          title: "Staff Management",
+          href: "/manager/setting/fulfillment",
+
+          icon: (
+            <Image
+              src="/images/icons/groupUser.svg"
+              alt="group user"
+              width={80}
+              height={80}
+            />
+          ),
+        },
+      ]
     },
   ];
 

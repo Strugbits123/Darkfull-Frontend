@@ -49,6 +49,7 @@ const listSidebarUserPermission = [
           { label: "Inventory", icon: Package, active: false },
           { label: "Fulfillments", icon: Package, active: false },
           { label: "Return", icon: Package, active: false },
+          { label: "Analytics", icon: Package, active: false },
         ],
       },
       {
@@ -57,12 +58,32 @@ const listSidebarUserPermission = [
       },
     ],
   },
+  
+  {
+    role: "Manager",
+    permissions: [
+      {
+        title: "Menu",
+        items: [
+          { label: "Inventory", icon: Layers, active: false },
+          { label: "Return", icon: Package, active: false },
+          { label: "Fulfillments", icon: Package, active: false },
+          { label: "Analytics", icon: Package, active: false },
+        ],
+      },
+      {
+        title: "Others",
+        link:"/manager/profile",
+        items: [{ label: "Profile Settings", icon: Settings, active: false }],
+      },
+    ],
+  }
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
-  const userRole = "Director"; // Example role, this should come from your auth logic
+  const userRole = "Manager"; // Example role, this should come from your auth logic
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar max-h-[calc(80vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">
@@ -78,7 +99,7 @@ export function SidebarNav() {
                   <div key={section.label} className="space-y-3">
                     <Link
                       key={section.label}
-                      href={`/${
+                      href={menu?.link || `/${
                         pathname.split("/")[1]
                       }/${section.label.toLowerCase()}`}
                       className={cn(

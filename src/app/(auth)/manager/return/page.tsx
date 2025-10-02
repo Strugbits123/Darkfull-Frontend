@@ -9,7 +9,7 @@ import ReturnModal from "@/components/modal/returnModal/returnModal";
 import DataTable from "@/components/InventoryTable/dataTable";
 
 export default function ReturnTable() {
-  const [tab, setTab] = useState("jobs");
+  const [tab, setTab] = useState("view");
   const columnsJobs = [
     {
       key: "id",
@@ -80,7 +80,26 @@ export default function ReturnTable() {
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: any) => <span >{row.id}</span>,
+    },
+    {
+      name: "brand",
+      title: "Brand",
+      sortable: true,
+      render: (row: any) => <span >{row.brand}</span>,
+    },
+    {
+      key: "platform",
+      title: "Platform",
+      render: (row: any) => (
+        <Image
+          width={70}
+          height={40}
+          src={"/images/platform.svg"}
+          alt={row.platform}
+          className=" rounded-md "
+        />
+      ),
     },
     {
       key: "image",
@@ -111,7 +130,7 @@ export default function ReturnTable() {
     },
     {
       key: "action",
-      title: "Action",
+      title: "Status",
       render: (item: any) => (
         <div className="flex flex-row gap-2">
           <Button
@@ -163,7 +182,6 @@ export default function ReturnTable() {
 
       <div className="flex gap-6 mb-6  border-b border-gray-200">
         {[
-          { title: " Job", key: "jobs" },
           { title: " View ", key: "view" },
         ].map((tabValue) => (
           <button
@@ -188,15 +206,7 @@ export default function ReturnTable() {
         showExportButton={(tab === "jobs" ? false : true) as boolean}
         filterOptions={Object.keys(STATUS_COLORS)}
         showCustomButton={
-          <div>
-            <Button
-              variant={"outline"}
-              className="w-50 mr-5 bg-[#BBF7D0] text-[#15803D] hover:bg-[#BBF7D0] hover:text-[#15803D] "
-            >
-              <span className="text-green-700 animate-pulse text-1xl">●</span>{" "}
-              Connected to Salla
-            </Button>
-          </div>
+          null
         }
       />
     </div>

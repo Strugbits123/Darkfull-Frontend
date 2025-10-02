@@ -39,6 +39,7 @@ type DataTableProps<T> = {
   filterOptions?: string[];
     showExportButton?: boolean;
   perPageOptions?: number[];
+  showCustomButton?: React.ReactNode;
 };
 
 export default function DataTable<T extends Record<string, any>>({
@@ -48,6 +49,7 @@ export default function DataTable<T extends Record<string, any>>({
   filterOptions = [],
   showExportButton = true,
   perPageOptions = [5, 10, 25, 50],
+  showCustomButton,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string | undefined>();
@@ -123,7 +125,8 @@ export default function DataTable<T extends Record<string, any>>({
         </div>
 
         {/* Right side (Export button) */}
-        <div className="w-full md:w-auto">
+        <div className="w-full md:w-auto flex-row gap-2 flex justify-end">
+          {showCustomButton && showCustomButton}
           {showExportButton && (
           <Button className="bg-mind-light-green hover:bg-mind-light-green text-white w-full md:w-40 h-10">
             <ArrowUpFromLineIcon className="w-4 h-4 mr-2" />
