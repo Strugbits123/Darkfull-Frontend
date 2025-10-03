@@ -23,9 +23,9 @@ export type Product = {
 
 export const STATUS_COLORS: Record<string, string> = {
   Returned: "bg-orange-200 text-[#000000]",
-  Shipped: "bg-blue-200 text-[#000000]",
-  Picked: "bg-gray-300 text-[#000000]",
-  Packed: "bg-gray-200 text-[#000000]",
+  Shipped: "bg-[#B2EAFF] text-[#000000]",
+  Picked: "bg-[#FFB697] text-[#000000]",
+  Packed: "bg-[#CCCCCC] text-[#000000]",
   New: "bg-[#FFE9AE] text-[#000000]",
   Delivered: "bg-[#DCFCE7] text-[#000000]",
   Cancelled: "bg-[#FF9292] text-[#000000]",
@@ -45,7 +45,7 @@ export const DUMMY_DATA: Product[] = [
     sku: "WH-001-BLK",
     variantSize: "S",
     variantColor: "White",
-    status: "Received",
+    status: "Picked",
     quantity: 120,
   },
   {
@@ -69,7 +69,7 @@ export const DUMMY_DATA: Product[] = [
     sku: "WH-001-K",
     variantSize: "88S",
     variantColor: "White",
-    status: "Stocked",
+    status: "Packed",
     quantity: 120,
   },
 
@@ -95,7 +95,7 @@ export const DUMMY_DATA: Product[] = [
     sku: "WH-001-BLK",
     variantSize: "S",
     variantColor: "White",
-    status: "Returned",
+    status: "Shipped",
     quantity: 120,
   },
   {

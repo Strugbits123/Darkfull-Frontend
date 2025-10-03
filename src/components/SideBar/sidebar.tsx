@@ -110,7 +110,7 @@ const listSidebarUserPermission = [
 export function SidebarNav() {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
-  const userRole = "SuperAdmin"; // Example role, this should come from your auth logic
+  const userRole = "Worker"; // Example role, this should come from your auth logic
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar min-h-[calc(70vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">

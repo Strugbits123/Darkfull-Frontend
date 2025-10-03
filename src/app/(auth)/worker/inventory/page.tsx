@@ -8,71 +8,31 @@ import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 import AssignModal from "@/components/modal/AssignModal/assignModal";
 import AssignInventory from "@/components/modal/assignInventory/assignInventory";
-
-
+import PutawayModal from "@/components/modal/workerModal/PutawayModal/putway";
+import ReceivedModal from "@/components/modal/workerModal/receivedModal/receivedModal";
 
 export default function InventoryTable() {
-  const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");
-  const columnsJobs = [
-    {
-      key: "image",
-      title: "Image",
-      render: (row: any) => (
-        <img
-          src={row.image}
-          alt={row.name}
-          className="h-10 w-10 rounded-md object-cover"
-        />
-      ),
-    },
-    { key: "name", title: "Product Name", sortable: true },
-    {
-      key: "variant",
-      title: "Variants",
-      render: (row: any) => (
-        <div className="flex gap-2">
-          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
-            {row.variantSize}
-          </Badge>
-          <Badge variant="outline">{row.variantColor}</Badge>
-        </div>
-      ),
-    },
-    { key: "sku", title: "SKU", sortable: true },
-    { key: "platform", title: "Fulfillment Point" },
-    {
-      key: "quantity",
-      title: "Quantity",
-      render: (row: any) => <span className="text-lg">{row.quantity}</span>,
-    },
-    {
-      key: "status",
-      title: "Status",
-      sortable: true,
-      render: (row: any) => (
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            STATUS_COLORS[row.status]
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      title: "Actions",
-      render: () => (
-        <Button
-          variant="outline"
-          onClick={() => setOpenAssignModal({ open: true, products: [] })}
-          className="bg-yellow-400 hover:bg-yellow-500 text-white"
-        >
-          Assign
-        </Button>
-      ),
-    },
-  ];
+  const [modalShow, setModalShow] = useState({
+    receivedModal: false,
+    newModal: false,
+  });
+  function checkTheStatus(status: string) {
+    console.log(status);
+    if (status === "Received") {
+      setModalShow({ ...modalShow, receivedModal: true });
+    } else if (status === "New") {
+      setModalShow({ ...modalShow, newModal: true });
+    } else if (status === "Out of Stock") {
+      return alert("Alert: Item is out of stock. Cannot fulfill orders.");
+    } else if (status === "Discontinued") {
+      return alert(
+        "Notice: Item has been discontinued and is no longer available."
+      );
+    } else {
+      return alert("Unknown status. Please check the item details.");
+    }
+  }
+
   const columnsView = [
     {
       key: "image",
@@ -108,14 +68,19 @@ export default function InventoryTable() {
       title: "Status",
       sortable: true,
       render: (row: any) => (
-        
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            STATUS_COLORS[row.status]
-          }`}
+        <button
+          onClick={() => {
+            checkTheStatus(row.status);
+          }}
         >
-          {row.status}
-        </span>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              STATUS_COLORS[row.status]
+            }`}
+          >
+            {row.status}
+          </span>
+        </button>
       ),
     },
   ];
@@ -126,6 +91,20 @@ export default function InventoryTable() {
   }>({ open: false, products: [] });
   return (
     <div className="p-6 bg-card">
+      <ReceivedModal
+        open={modalShow.newModal}
+        setOpenModal={() =>
+          setModalShow({ ...modalShow, newModal: false })
+        }
+      />
+      <PutawayModal
+        products={[]}
+        showQuantity={false}
+        open={modalShow.receivedModal}
+        setOpenModal={() => {
+          setModalShow({ ...modalShow, receivedModal: false });
+        }}
+      />
       <AssignInventory
         products={openAssignModal.products}
         open={openAssignModal.open}
@@ -150,7 +129,7 @@ export default function InventoryTable() {
       </div>
 
       <DataTable
-        columns={activeTab === "jobs" ? columnsJobs : columnsView}
+        columns={columnsView}
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
         filterOptions={Object.keys(STATUS_COLORS)}

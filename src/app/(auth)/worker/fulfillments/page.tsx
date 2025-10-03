@@ -8,6 +8,10 @@ import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 import AssignWorker from "@/components/modal/assignWorker/page";
+import PackingModal from "@/components/modal/workerModal/PackingModal/packingModal";
+import ShipmentModal from "@/components/modal/workerModal/shipmentModal/shipmentModal";
+import NewOrderModal from "@/components/modal/workerModal/newOrderModal/newOrderModal";
+import TrackingIdModal from "@/components/modal/workerModal/TrackingIdModal/trackingIdModal";
 
 export default function FulfillmentsTable() {
   const columns = [
@@ -76,31 +80,45 @@ export default function FulfillmentsTable() {
       title: "Status",
       sortable: true,
       render: (row: any) => (
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            STATUS_COLORS[row.status]
-          }`}
+        <button
+          onClick={() => {
+            checkTheStatus(row.status);
+          }}
         >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      key: "action",
-      title: "Assign Task",
-      sortable: true,
-      render: (row: any) => (
-        <Button className="bg-[#20A29A] hover:bg-[#20A29A] text-white" onClick={() => setAssignWorkerModal(true)}>
-          Assign Task
-        </Button>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              STATUS_COLORS[row.status]
+            }`}
+          >
+            {row.status}
+          </span>
+        </button>
       ),
     },
   ];
   const [assignWorkerModal, setAssignWorkerModal] = useState(false);
+  const [modalShow, setModalShow] = useState({
+    pickedModal: false,
+    shippedModal: false,
+    packedModal: false,
+    newModal: false,
+  });
+  function checkTheStatus(status: string) {
+    console.log(status);
+    if (status === "Picked") {
+      setModalShow({ ...modalShow, packedModal: true });
+    } else if (status === "Shipped") {
+      setModalShow({ ...modalShow, shippedModal: true });
+    } else if (status === "Packed") {
+      setModalShow({ ...modalShow, pickedModal: true });
+    } else if (status === "New") {
+      setModalShow({ ...modalShow, newModal: true });
+    } else {
+      return null;
+    }
+  }
   return (
     <div className="p-6 bg-card">
-      
-      <AssignWorker open={assignWorkerModal}  workers={[]} setOpenModal={() => setAssignWorkerModal(false)} />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Fulfillments</h1>
@@ -120,9 +138,23 @@ export default function FulfillmentsTable() {
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
         showExportButton={true}
-        showCustomButton={
-         null
-        }
+        showCustomButton={null}
+      />
+      <NewOrderModal
+        open={modalShow.newModal}
+        setOpenModal={() => setModalShow({ ...modalShow, newModal: false })}
+      />
+      <PackingModal
+        open={modalShow.packedModal}
+        setOpenModal={() => setModalShow({ ...modalShow, packedModal: false })}
+      />
+      <ShipmentModal
+        open={modalShow.shippedModal}
+        setOpenModal={() => setModalShow({ ...modalShow, shippedModal: false })}
+      />
+      <TrackingIdModal
+        open={modalShow.pickedModal}
+        setOpenModal={() => setModalShow({ ...modalShow, pickedModal: false })}
       />
     </div>
   );
