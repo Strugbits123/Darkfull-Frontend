@@ -82,7 +82,7 @@ export const DUMMY_DATA: Product[] = [
     sku: "WH-001-BLK",
     variantSize: "S",
     variantColor: "White",
-    status: "In_Transit",
+    status: "Received",
     quantity: 120,
   },
 

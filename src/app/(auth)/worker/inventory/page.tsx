@@ -22,14 +22,6 @@ export default function InventoryTable() {
       setModalShow({ ...modalShow, receivedModal: true });
     } else if (status === "New") {
       setModalShow({ ...modalShow, newModal: true });
-    } else if (status === "Out of Stock") {
-      return alert("Alert: Item is out of stock. Cannot fulfill orders.");
-    } else if (status === "Discontinued") {
-      return alert(
-        "Notice: Item has been discontinued and is no longer available."
-      );
-    } else {
-      return alert("Unknown status. Please check the item details.");
     }
   }
 
@@ -91,27 +83,7 @@ export default function InventoryTable() {
   }>({ open: false, products: [] });
   return (
     <div className="p-6 bg-card">
-      <ReceivedModal
-        open={modalShow.newModal}
-        setOpenModal={() =>
-          setModalShow({ ...modalShow, newModal: false })
-        }
-      />
-      <PutawayModal
-        products={[]}
-        showQuantity={false}
-        open={modalShow.receivedModal}
-        setOpenModal={() => {
-          setModalShow({ ...modalShow, receivedModal: false });
-        }}
-      />
-      <AssignInventory
-        products={openAssignModal.products}
-        open={openAssignModal.open}
-        setOpenModal={() => {
-          setOpenAssignModal({ open: false, products: [] });
-        }}
-      />
+      
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Inventory</h1>
@@ -133,6 +105,27 @@ export default function InventoryTable() {
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
         filterOptions={Object.keys(STATUS_COLORS)}
+      />
+      <ReceivedModal
+        open={modalShow.newModal}
+        setOpenModal={() =>
+          setModalShow({ ...modalShow, newModal: false })
+        }
+      />
+      <PutawayModal
+        products={[]}
+        showQuantity={false}
+        open={modalShow.receivedModal}
+        setOpenModal={() => {
+          setModalShow({ ...modalShow, receivedModal: false });
+        }}
+      />
+      <AssignInventory
+        products={openAssignModal.products}
+        open={openAssignModal.open}
+        setOpenModal={() => {
+          setOpenAssignModal({ open: false, products: [] });
+        }}
       />
     </div>
   );
