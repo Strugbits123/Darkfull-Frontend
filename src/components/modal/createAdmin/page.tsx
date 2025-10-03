@@ -51,12 +51,12 @@ const CreateAdminModal = ({
               </Label>
               <Input className="w-full mt-2" placeholder="Admin Email" />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <Label className="text-sm font-medium mb-2">
                 Enter Admin Password
               </Label>
               <Input className="w-full mt-2" placeholder="Admin Password" />
-            </div>
+            </div> */}
            
           <Button
             className="sm:w-full md:w-full bg-[#004370] h-10 hover:bg-[#003057 ] text-white px-6 MD:px-8 my-6"

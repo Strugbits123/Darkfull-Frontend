@@ -119,6 +119,7 @@ export default function FulfillmentsTable() {
   }
   return (
     <div className="p-6 bg-card">
+    
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Fulfillments</h1>
@@ -140,10 +141,7 @@ export default function FulfillmentsTable() {
         showExportButton={true}
         showCustomButton={null}
       />
-      <NewOrderModal
-        open={modalShow.newModal}
-        setOpenModal={() => setModalShow({ ...modalShow, newModal: false })}
-      />
+        <NewOrderModal open={modalShow.newModal} setOpenModal={() => setModalShow({ ...modalShow, newModal: false })} />
       <PackingModal
         open={modalShow.packedModal}
         setOpenModal={() => setModalShow({ ...modalShow, packedModal: false })}

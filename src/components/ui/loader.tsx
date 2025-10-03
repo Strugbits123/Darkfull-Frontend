@@ -1,15 +1,14 @@
-import { Skeleton } from "./skeleton";
-import { Progress } from "./progress";
+"use client"
 
-export function AppLoader() {
+import { Loader2 } from "lucide-react"
+
+export  function AppLoader() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[200px] w-full gap-4">
-      <Progress className="w-1/2 max-w-xs" value={80} />
-      <div className="flex gap-2">
-        <Skeleton className="h-8 w-8 rounded-full" />
-        <Skeleton className="h-8 w-32" />
+    <div className="fixed inset-0 flex items-center justify-center bg-white/80 z-50">
+      <div className="flex flex-col items-center space-y-4">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Loading, please wait...</p>
       </div>
-      <Skeleton className="h-4 w-40" />
     </div>
-  );
+  )
 }
