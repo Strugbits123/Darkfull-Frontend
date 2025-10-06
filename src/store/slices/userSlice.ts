@@ -8,6 +8,7 @@ import { User } from '@/lib/types/auth.types';
 export interface UserState {
   user: User | null;
   isAuthenticated: boolean;
+  role: string | null;
   tokens: {
     accessToken: string | null;
     refreshToken: string | null;
@@ -25,6 +26,7 @@ export interface UserState {
 const initialState: UserState = {
   user: null,
   isAuthenticated: false,
+  role:null,
   tokens: {
     accessToken: null,
     refreshToken: null,
@@ -42,6 +44,9 @@ const userSlice = createSlice({
     setUser(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
+    },
+    setRole(state, action: PayloadAction<string | null>) {
+      state.role = action.payload;
     },
     setTokens(state, action: PayloadAction<Partial<UserState['tokens']>>) {
       state.tokens = { ...state.tokens, ...action.payload };

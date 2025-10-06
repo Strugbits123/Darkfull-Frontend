@@ -1,118 +1,100 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Check if token is expired
- */
-const isTokenExpired = (expiresAt: string): boolean => {
-  if (!expiresAt) return true
-  return new Date(expiresAt) <= new Date()
-}
-
-/**
- * Next.js 15 Middleware for Route Protection
- * Protects authenticated and public routes based on user authentication status
- */
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  // Get authentication token and expiry from cookies
-  const accessToken = request.cookies.get('accessToken')?.value
-  const accessTokenExpiresAt = request.cookies.get('accessTokenExpiresAt')?.value
-  
-  // Check if token exists and is not expired
-  const isAuthenticated = !!(accessToken && accessTokenExpiresAt && !isTokenExpired(accessTokenExpiresAt));
+  const token = request.cookies.get("access_token")?.value;
+  let role = request.cookies.get("role")?.value; // e.g. "ADMIN", "WORKER"
+  const { pathname } = request.nextUrl;
 
-  // const publicRoutes = [
-  //   '/',
-  //   '/how-it-works',
-  //   '/about-us',
-  //   '/pricing',
-  //   '/contact-us'
-  // ]
-  
-  // Define protected routes (require authentication)
-  const protectedRoutes = [
-    '/dashboard',
-    '/dashboard/sender',
-    '/dashboard/receiver',
-  ]
-  
-  // Define auth routes (accessible only when not authenticated)
-  const authRoutes = [
-    '/login',
-    '/signup/sender', 
-    '/signup/receiver',
-    '/forgot-password',
-    '/reset-password',
-    '/verify-user',
-    '/verify-forgot-password'
-  ]
-  
-  // Check if current path is a protected route
-  const isProtectedRoute = protectedRoutes.some(route => {
-    return pathname === route || (route !== '/' && pathname.startsWith(route + '/'))
-  })
-  
-  // Check if current path is an auth route
-  const isAuthRoute = authRoutes.some(route => {
-    return pathname === route || pathname.startsWith(route + '/')
-  })
-  
-  // Route protection logic
-  if (isProtectedRoute && !isAuthenticated) {
-    // Redirect unauthenticated users to login page
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname) // Store intended destination
-    return NextResponse.redirect(loginUrl)
+  // Normalize role
+  role = role ? role.toUpperCase() : undefined;
+
+  // 🔹 Debug Logs
+  console.log("🟢 Middleware Debug:");
+  console.log("Pathname:", pathname);
+  console.log("Token:", token ? "✅ present" : "❌ missing");
+  console.log("Role (raw):", request.cookies.get("role")?.value);
+  console.log("Role (normalized):", role);
+
+  const publicPaths = ["/", "/login", "/forgot-password", "/reset-password"];
+  const isPublicRoute = publicPaths.includes(pathname);
+
+  // ✅ If no token and trying to access private route → redirect to login
+  if (!token && !isPublicRoute) {
+    console.log("➡️ Redirecting: no token, private route");
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-  
-  if (isAuthRoute && isAuthenticated) {
-    // Check if there's a redirect parameter in the URL
-    const redirectTo = request.nextUrl.searchParams.get('redirect') || '/'
-    const dashboardUrl = new URL(redirectTo, request.url)
-    return NextResponse.redirect(dashboardUrl)
+
+  // ✅ If token exists but role missing → force logout
+  if (token && !role) {
+    console.log("➡️ Redirecting: token present but role missing");
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-  
-  // Add auth headers for API requests
-  const response = NextResponse.next()
-  
-  // Add authentication header if token exists
-  if (accessToken) {
-    response.headers.set('Authorization', `Bearer ${accessToken}`)
+
+  // ✅ Role → Section Prefix (whole section allowed)
+  const rolePrefixes: Record<string, string> = {
+    ADMIN: "/admin",
+    DIRECTOR: "/director",
+    MANAGER: "/manager",
+    WORKER: "/worker",
+    CLIENT: "/client",
+    SUPER_ADMIN: "/superAdmin",
+  };
+
+  // ✅ Default Dashboard Routes
+  const dashboards: Record<string, string> = {
+    ADMIN: "/admin/directors",
+    DIRECTOR: "/director/fulfillments",
+    MANAGER: "/manager",
+    WORKER: "/worker",
+    CLIENT: "/client/products",
+    SUPER_ADMIN: "/superAdmin/store",
+  };
+
+  // ✅ If "/" route → redirect to dashboard
+  if (pathname === "/") {
+    if (token && role) {
+      const redirectPath = dashboards[role] || "/login";
+      console.log(`➡️ Redirecting "/" to dashboard: ${redirectPath}`);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
+    }
+    console.log("➡️ Public root route accessed, continuing...");
+    return NextResponse.next();
   }
-  
-  // Set CORS headers for API routes
-  if (pathname.startsWith('/api/')) {
-    response.headers.set('Access-Control-Allow-Origin', '*')
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+
+  // ✅ Logged-in user on public route → redirect to dashboard
+  if (token && isPublicRoute) {
+    const redirectPath = dashboards[role] || "/login";
+    console.log(`➡️ Redirecting public route to dashboard: ${redirectPath}`);
+    return NextResponse.redirect(new URL(redirectPath, request.url));
   }
-  
-  return response
+
+  // ✅ Private route protection
+  if (role) {
+    const allowedPrefix = rolePrefixes[role];
+    if (allowedPrefix && !pathname.startsWith(allowedPrefix)) {
+      const redirectPath = dashboards[role] || "/login";
+      console.log(
+        `❌ Unauthorized access: "${pathname}" not allowed for ${role}, redirecting to ${redirectPath}`
+      );
+      return NextResponse.redirect(new URL(redirectPath, request.url));
+    }
+  }
+
+  console.log("✅ Access granted:", pathname);
+  return NextResponse.next();
 }
 
-/**
- * Middleware Configuration
- * Specify which routes should trigger the middleware
- */
 export const config = {
   matcher: [
     "/",
-    // "/how-it-works",
-    // "/about-us",
-    // "/pricing",
-    // "/contact-us",
-    // "/dashboard",
-    // "/dashboard/sender",
-    // "/dashboard/receiver",
-    // "/login",
-    // "/signup/sender",
-    // "/signup/receiver",
-    // "/forgot-password",
-    // "/reset-password", 
-    // "/verify-user",
-    // "/verify-forgot-password",
-
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/admin/:path*",
+    "/client/:path*",
+    "/director/:path*",
+    "/manager/:path*",
+    "/worker/:path*",
+    '/superAdmin/:path*',
   ],
-}
+};
