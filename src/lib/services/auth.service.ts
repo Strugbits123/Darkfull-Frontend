@@ -33,6 +33,8 @@ class AuthService {
         console.log('sssss')
         if (user?.store?.isActive == false) {
           setAuthCookiesOnlyToken(tokens);
+           localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
         } else {
           tokens.userRole = user.role; // Add userRole to tokens for cookie storage
           localStorage.setItem("accessToken", tokens.accessToken);
