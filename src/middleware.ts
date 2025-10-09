@@ -24,10 +24,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // ✅ If token exists but role missing → force logout
+  // ✅ If token exists but role missing → allow only public routes (esp. /login)
   if (token && !role) {
-    console.log("➡️ Redirecting: token present but role missing");
-    return NextResponse.redirect(new URL("/login", request.url));
+    if (!isPublicRoute) {
+      console.log(
+        "➡️ Token present but role missing → restricting private access"
+      );
+      return NextResponse.redirect(new URL("/login", request.url));
+    } else {
+      console.log("➡️ Token present but role missing → staying on login/public");
+      return NextResponse.next();
+    }
   }
 
   // ✅ Role → Section Prefix (whole section allowed)
@@ -50,7 +57,7 @@ export function middleware(request: NextRequest) {
     SUPER_ADMIN: "/superAdmin/store",
   };
 
-  // ✅ If "/" route → redirect to dashboard
+  // ✅ If "/" route → redirect to dashboard if logged in
   if (pathname === "/") {
     if (token && role) {
       const redirectPath = dashboards[role] || "/login";
@@ -62,7 +69,7 @@ export function middleware(request: NextRequest) {
   }
 
   // ✅ Logged-in user on public route → redirect to dashboard
-  if (token && isPublicRoute) {
+  if (token && role && isPublicRoute) {
     const redirectPath = dashboards[role] || "/login";
     console.log(`➡️ Redirecting public route to dashboard: ${redirectPath}`);
     return NextResponse.redirect(new URL(redirectPath, request.url));
@@ -95,6 +102,6 @@ export const config = {
     "/director/:path*",
     "/manager/:path*",
     "/worker/:path*",
-    '/superAdmin/:path*',
+    "/superAdmin/:path*",
   ],
 };
