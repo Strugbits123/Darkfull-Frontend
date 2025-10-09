@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, Activity } from "react";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 import { PencilIcon, Send, Store, TrashIcon } from "lucide-react";
@@ -63,9 +63,8 @@ const IntegrationPage = () => {
         </div>
         
       </div>
-      <CreateAdminModal open={createAdminModalOpen} setOpenModal={() => setCreateAdminModalOpen(!createAdminModalOpen)} />
-      
-      <DataTable
+      <CreateAdminModal data={[]} open={createAdminModalOpen} setOpenModal={() => setCreateAdminModalOpen(!createAdminModalOpen)} />
+            <DataTable
         columns={integrationTable}
         data={DUMMY_DATA}
         searchKeys={[]}

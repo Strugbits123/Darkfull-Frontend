@@ -138,7 +138,11 @@ export default function ReturnTable() {
     },
   ];
 
-  const [showReturnModal, setShowReturnModal] = useState({
+  const [showReturnModal, setShowReturnModal] = useState<{
+    showQuantity: boolean;
+    open: boolean;
+    products: any[]; // Change 'any[]' to a more specific type if available
+  }>({
     showQuantity: false,
     open: false,
     products: [],
@@ -185,7 +189,6 @@ export default function ReturnTable() {
         columns={tab === "jobs" ? columnsJobs : columnsOfView}
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
-        showExportButton={(tab === "jobs" ? false : true) as boolean}
         filterOptions={Object.keys(STATUS_COLORS)}
         showCustomButton={
           <div>

@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
-import DataTable from "@/components/InventoryTable/dataTable";
 import { PencilIcon, Send, Store, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateAdminModal from "@/components/modal/createAdmin/page";
+import DataTableApi from "@/components/InventoryTable/dataTablewithApi";
+import { getStores } from "@/lib/services/store.service";
 const StorePage = () => {
   const [activeTab, setTab] = useState("store");
   const storeTable = [
@@ -21,16 +21,19 @@ const StorePage = () => {
     {
       key: "director_email",
       title: "Director Email",
-      render: (row: any) => (
-        <span className="">{row.director_email || "N/A"}</span>
-      ),
+      render: (row: any) => {
+        return <span className="">{row?.invitations?.map((item: any) => item.email).join(", ") || "N/A"}</span>;
+      },
     },
     {
       key: "action",
       title: "Action",
       render: (row: any) => (
         <div>
-          <button className="text-gray-600 underline bg-gray-300 rounded-md px-2 py-2 mr-3">
+          <button
+            className="text-gray-600 underline bg-gray-300 rounded-md px-2 py-2 mr-3"
+            onClick={() => setCreateAdminModalOpen({ open: true, data: row })}
+          >
             <PencilIcon className="w-4 h-4" />
           </button>
           <button className="text-red-600 underline bg-red-300 rounded-md px-2 py-2">
@@ -97,7 +100,10 @@ const StorePage = () => {
       ),
     },
   ];
-  const [createAdminModalOpen, setCreateAdminModalOpen] = useState(false);
+  const [createAdminModalOpen, setCreateAdminModalOpen] = useState({
+    open: false,
+    data: null,
+  });
 
   return (
     <div className="p-6 bg-card">
@@ -106,12 +112,24 @@ const StorePage = () => {
           <h1 className="text-2xl font-bold">Manage Store & Admin</h1>
           <p className="text-sm text-gray-500">Manage Admin </p>
         </div>
-        <Button className="bg-[#004370] hover:bg-[#004370] text-white h-14 w-48" onClick={() => setCreateAdminModalOpen(true)}>
+        <Button
+          className="bg-[#004370] hover:bg-[#004370] text-white h-14 w-48"
+          onClick={() => setCreateAdminModalOpen({ open: true, data: null })}
+        >
           <Store className="text-white" />
           <span> Create New Admin</span>
         </Button>
       </div>
-      <CreateAdminModal open={createAdminModalOpen} setOpenModal={() => setCreateAdminModalOpen(!createAdminModalOpen)} />
+      {createAdminModalOpen.open && (
+        <CreateAdminModal
+          open={createAdminModalOpen.open}
+          data={createAdminModalOpen.data}
+          isEditModal={createAdminModalOpen?.data == null ? false : true}
+          setOpenModal={() =>
+            setCreateAdminModalOpen({ open: false, data: null })
+          }
+        />
+      )}
       <div className="flex gap-6 mb-6  border-b border-gray-200">
         {[
           { title: " Store", key: "store" },
@@ -130,10 +148,12 @@ const StorePage = () => {
           </button>
         ))}
       </div>
-      <DataTable
+
+      <DataTableApi
         columns={activeTab === "store_admin" ? storeAdminTable : storeTable}
-        data={DUMMY_DATA}
-        searchKeys={[]}
+        queryKey={["users"]}
+        queryFn={getStores}
+        searchKeys={["name", "email"]}
         filterOptions={[]}
         showExportButton={false}
         showFilterByStatus={false}

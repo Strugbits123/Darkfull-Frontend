@@ -1,5 +1,7 @@
+import { Verify } from "crypto";
 import apiClient from "../axios/api-client";
 import {
+  AcceptInvitation,
   ApiResponse,
   ForgotPasswordRequest,
   LoginRequest,
@@ -7,6 +9,7 @@ import {
   RefreshTokenRequest,
   ResendOtpRequest,
   ResetPasswordRequest,
+  VerifyTokenResponse,
   VerifyUserRequest,
 } from "../types/auth.types";
 import { clearAuthCookies, setAuthCookies } from "../utils/cookies";
@@ -14,27 +17,40 @@ import { clearAuthCookies, setAuthCookies } from "../utils/cookies";
 class AuthService {
   private readonly basePath = "/auth";
 
-
-
   /**
    * User login
    * POST /auth/user-login
    */
   async login(data: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    const response = await apiClient.post(`${this.basePath}/user-login`, data);
+    const response = await apiClient.post(`${this.basePath}/login`, data);
 
     //store token in localstorage and cookies
     if (response.data.success && response) {
-      const { tokens, user } = response.data.data;
+      console.log("Login response:", response.data);
+      const { user, tokens } = response.data.data;
 
-      if (typeof window !== "undefined") {
-        // Store in localStorage
+      if (user.role === "STORE_ADMIN") {
+        console.log('sssss')
+        if (user?.store?.isActive == false) {
+        } else {
+          tokens.userRole = user.role; // Add userRole to tokens for cookie storage
+          localStorage.setItem("accessToken", tokens.accessToken);
+          localStorage.setItem("refreshToken", tokens.refreshToken);
+          localStorage.setItem("user", JSON.stringify(user));
+
+          if (typeof window !== "undefined") {
+            setAuthCookies(tokens);
+          }
+        }
+      } else {
+        tokens.userRole = user.role; // Add userRole to tokens for cookie storage
         localStorage.setItem("accessToken", tokens.accessToken);
         localStorage.setItem("refreshToken", tokens.refreshToken);
         localStorage.setItem("user", JSON.stringify(user));
 
-        //store in cookies for server-side access
-        setAuthCookies(tokens);
+        if (typeof window !== "undefined") {
+          setAuthCookies(tokens);
+        }
       }
     }
     return response.data;
@@ -134,13 +150,13 @@ class AuthService {
         localStorage.setItem("accessToken", tokens.accessToken);
         localStorage.setItem("refreshToken", tokens.refreshToken);
         localStorage.setItem("user", JSON.stringify(user));
+        tokens.userRole = user.role; // Add userRole to tokens for cookie storage
         setAuthCookies(tokens);
       }
     }
 
     return response.data;
   }
-
 
   /**
    * User logout
@@ -162,6 +178,26 @@ class AuthService {
     return response.data;
   }
 
+  async verifyToken(token: string): Promise<ApiResponse<VerifyTokenResponse>> {
+    const response = await apiClient.get(
+      `${this.basePath}/invitations/validate/${token}`
+    );
+    return response.data;
+  }
+
+  async acceptInvitation(data: AcceptInvitation): Promise<ApiResponse> {
+    const response = await apiClient.post(
+      `${this.basePath}/invitations/accept`,
+      data
+    );
+    return response.data;
+  }
+
+  
+  async createSallaConnectUrl(data: any): Promise<ApiResponse<{ url: string }>> {
+    const response = await apiClient.post(`${this.basePath}/salla/connect`, data);
+    return response.data;
+  }
   /**
    * Get current user from localStorage
    */

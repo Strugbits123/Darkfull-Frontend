@@ -80,13 +80,13 @@ export default function ReturnTable() {
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span >{row.id}</span>,
+      render: (row: any) => <span>{row.id}</span>,
     },
     {
-      name: "brand",
+      key: "brand",
       title: "Brand",
       sortable: true,
-      render: (row: any) => <span >{row.brand}</span>,
+      render: (row: any) => <span>{row.brand}</span>,
     },
     {
       key: "platform",
@@ -157,7 +157,22 @@ export default function ReturnTable() {
     },
   ];
 
-  const [showReturnModal, setShowReturnModal] = useState({
+  type Product = {
+    id: string;
+    name: string;
+    variant: string;
+    sku: string;
+    returns: number;
+    quantity: number;
+    img: string;
+    // add other fields as needed
+  };
+
+  const [showReturnModal, setShowReturnModal] = useState<{
+    showQuantity: boolean;
+    open: boolean;
+    products: Product[];
+  }>({
     showQuantity: false,
     open: false,
     products: [],
@@ -181,9 +196,7 @@ export default function ReturnTable() {
       </div>
 
       <div className="flex gap-6 mb-6  border-b border-gray-200">
-        {[
-          { title: " View ", key: "view" },
-        ].map((tabValue) => (
+        {[{ title: " View ", key: "view" }].map((tabValue) => (
           <button
             key={tabValue.key}
             onClick={() => setTab(tabValue.key as "jobs" | "view")}
@@ -201,13 +214,11 @@ export default function ReturnTable() {
       <DataTable
         showExportButton={tab === "jobs" ? false : true}
         columns={tab === "jobs" ? columnsJobs : columnsOfView}
+
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
-        showExportButton={(tab === "jobs" ? false : true) as boolean}
         filterOptions={Object.keys(STATUS_COLORS)}
-        showCustomButton={
-          null
-        }
+        showCustomButton={null}
       />
     </div>
   );

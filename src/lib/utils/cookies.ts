@@ -47,10 +47,13 @@ export const setAuthCookies = (tokens: {
   refreshToken: string
   accessTokenExpiresAt: string
   refreshTokenExpiresAt: string
+  userRole: string
 }) => {
   // Set access token (shorter expiry)
   setCookie('accessToken', tokens.accessToken, 1) // 1 day
-  
+  if (tokens.userRole) {
+    setCookie('role', tokens.userRole, 7) // 7 day
+  }
   // Set refresh token (longer expiry)
   setCookie('refreshToken', tokens.refreshToken, 7) // 7 days
   

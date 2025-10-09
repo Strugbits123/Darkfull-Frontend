@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("access_token")?.value;
+  const token = request.cookies.get("accessToken")?.value;
   let role = request.cookies.get("role")?.value; // e.g. "ADMIN", "WORKER"
   const { pathname } = request.nextUrl;
 
@@ -44,8 +44,8 @@ export function middleware(request: NextRequest) {
   const dashboards: Record<string, string> = {
     ADMIN: "/admin/directors",
     DIRECTOR: "/director/fulfillments",
-    MANAGER: "/manager",
-    WORKER: "/worker",
+    MANAGER: "/manager/fulfillments",
+    WORKER: "/worker/fulfillments",
     CLIENT: "/client/products",
     SUPER_ADMIN: "/superAdmin/store",
   };
