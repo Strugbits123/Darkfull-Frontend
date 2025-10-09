@@ -12,7 +12,7 @@ import {
   VerifyTokenResponse,
   VerifyUserRequest,
 } from "../types/auth.types";
-import { clearAuthCookies, setAuthCookies } from "../utils/cookies";
+import { clearAuthCookies, setAuthCookies,setAuthCookiesOnlyToken } from "../utils/cookies";
 
 class AuthService {
   private readonly basePath = "/auth";
@@ -32,6 +32,7 @@ class AuthService {
       if (user.role === "STORE_ADMIN") {
         console.log('sssss')
         if (user?.store?.isActive == false) {
+          setAuthCookiesOnlyToken(tokens);
         } else {
           tokens.userRole = user.role; // Add userRole to tokens for cookie storage
           localStorage.setItem("accessToken", tokens.accessToken);

@@ -83,7 +83,6 @@ export function LoginForm() {
   const createUrl = async (data: any) => {
     try {
       let url = await authService.createSallaConnectUrl(data);
-      console.log(url);
       const { authorizationUrl } = url.data;
       if (authorizationUrl) {
         window.open(authorizationUrl, "_blank"); // <-- opens in new tab
