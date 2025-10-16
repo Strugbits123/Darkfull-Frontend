@@ -1,5 +1,6 @@
-import { Bell, Home } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ModeToggle } from "@/components/ModeToggle";
 import Image from "next/image";
 
 export function Header() {
@@ -22,6 +23,7 @@ export function Header() {
         >
           <Bell className="h-5 w-5" aria-hidden="true" />
         </button>
+        <ModeToggle />
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-sm font-semibold text-foreground">

@@ -54,7 +54,7 @@ export function middleware(request: NextRequest) {
     MANAGER: "/manager/fulfillments",
     WORKER: "/worker/fulfillments",
     CLIENT: "/client/products",
-    SUPER_ADMIN: "/superAdmin/store",
+    SUPER_ADMIN: "/superAdmin/director",
   };
 
   // ✅ If "/" route → redirect to dashboard if logged in

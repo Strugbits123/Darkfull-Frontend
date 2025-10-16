@@ -34,10 +34,10 @@ export interface WorkerProfile extends UserProfile {
 
 // Table column definition
 export interface TableColumn<T> {
-  key: keyof T
-  label: string
-  sortable?: boolean
-  render?: (value: any, row: T) => React.ReactNode
+  key: keyof T;
+  label: string;
+  sortable?: boolean;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
 // Action button types

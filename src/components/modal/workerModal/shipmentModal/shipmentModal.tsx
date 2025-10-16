@@ -9,23 +9,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Separator } from "@/components/ui/separator";
 
 import {
   Calendar,
   Clock,
   MapPin,
-  Minus,
   Package,
   Phone,
-  Plus,
   Ruler,
   Scale,
   User,
@@ -101,7 +93,7 @@ const ShipmentModal = ({
                   </div>
                   <div className="flex items-center space-x-2">
                     <Ruler className="w-4 h-4" />
-                    <span>Dimensions: 12" × 8" × 4"</span>
+                    <span>Dimensions: 12&quot; × 8&quot; × 4&quot;</span>
                   </div>
                 </CardContent>
               </Card>

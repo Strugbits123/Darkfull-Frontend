@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -13,6 +12,8 @@ import {
   createStore,
   sendStoreInvitationEmailCreateStore,
 } from "@/lib/services/store.service";
+import type { ApiResponse } from "@/lib/types/auth.types";
+import type { CreateStoreResponse } from "@/lib/types/store.types";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import ApiErrorHandler from "@/lib/utils/error-handler";
@@ -37,16 +38,14 @@ const CreateAdminModal = ({
   open: boolean;
   setOpenModal: () => void;
   isEditModal?: boolean;
-  data: any;
+  data: { name?: string; email?: string; firstName?: string; lastName?: string } | null;
 }) => {
-  console.log(data, "---->");
   const [loading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm<CreateStoreFormData>({
     resolver: zodResolver(createStoreSchema),
     defaultValues: {
@@ -61,12 +60,12 @@ const CreateAdminModal = ({
     const { name, email, firstName, lastName } = data;
     try {
       setIsLoading(true);
-      const response: any = await createStore({
+      const response: ApiResponse<CreateStoreResponse> = await createStore({
         name,
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       });
       await sendStoreInvitationEmailCreateStore({
-        storeId: response.data?.store?.id,
+        storeId: response.data?.data?.store?.id as string,
         email: email,
         fullName: `${firstName} ${lastName}`,
         firstName: firstName,
@@ -87,16 +86,18 @@ const CreateAdminModal = ({
     const { name, email, firstName, lastName } = data;
     try {
       setIsLoading(true);
-      const response: any = await createStore({
+      const response: ApiResponse<CreateStoreResponse> = await createStore({
         name,
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       });
       await sendStoreInvitationEmailCreateStore({
-        storeId: response.data?.store?.id,
+        storeId: response.data?.data?.store?.id as string,
         email: email,
+        fullName: `${firstName} ${lastName}`,
         firstName: firstName,
         lastName: lastName,
         storeName: name,
+        role: "STORE_ADMIN",
       });
       toast.success("Store created and invitation sent successfully!");
       setOpenModal();
@@ -115,7 +116,7 @@ const CreateAdminModal = ({
       setValue("firstName", data?.firstName || "");
       setValue("lastName", data?.lastName || "");
     }
-  }, [isEditModal]);
+  }, [isEditModal, data?.name, data?.email, data?.firstName, data?.lastName, setValue]);
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -129,10 +130,10 @@ const CreateAdminModal = ({
 
               <div className="flex flex-col justify-items-center">
                 <DialogTitle className="text-4xl mt-5 font-semibold">
-                  {isEditModal ? "Edit" : "Create"} Admin & Send Invitation
+                  {isEditModal ? "Edit" : "Create"}  Director & Send Invitation
                 </DialogTitle>
                 <p className="text-sm text-gray-500 mt-4 text-center">
-                  {isEditModal ? "Edit" : "Create"} Admin & Send Invitation
+                  {isEditModal ? "Edit" : "Create"} Director (3rd Party Logistic) & Send Invitation
                 </p>
               </div>
             </div>

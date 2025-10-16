@@ -1,4 +1,3 @@
-import { Verify } from "crypto";
 import apiClient from "../axios/api-client";
 import {
   AcceptInvitation,
@@ -197,8 +196,13 @@ class AuthService {
   }
 
   
-  async createSallaConnectUrl(data: any): Promise<ApiResponse<{ url: string }>> {
-    const response = await apiClient.post(`${this.basePath}/salla/connect`, data);
+  async createSallaConnectUrl(
+    data: { sallaClientId: string; sallaClientSecret: string }
+  ): Promise<ApiResponse<{ authorizationUrl: string }>> {
+    const response = await apiClient.post(
+      `${this.basePath}/salla/connect`,
+      data
+    );
     return response.data;
   }
   /**

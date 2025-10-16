@@ -3,9 +3,8 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Users, User, Settings, LogOut, FileCheck, Sliders, Truck } from 'lucide-react'
+import {  Settings, LogOut, FileCheck, Sliders, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 
 interface SidebarItem {
@@ -27,7 +26,6 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
-  userRole = 'Admin',
   onLogout 
 }) => {
   const pathname = usePathname()

@@ -21,8 +21,6 @@ async function sendStoreInvitationEmailCreateStore(
   return response.data;
 }
 
-// 🔹 Example Data Type (Store)
-
 // 🔹 Params Interface
 export type GetStoresParams = {
   page?: number;
@@ -31,6 +29,7 @@ export type GetStoresParams = {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 };
+
 export type Store = {
   id: string;
   name: string;
@@ -45,11 +44,23 @@ export type Store = {
     totalWarehouses: number;
     pendingInvitations: number;
   };
-}; // 🔹 API Response Wrapper export type ApiResponse<T> = { data: T[]; total: number; currentPage: number; totalPages: number; limit: number; }; // 🔹 Params export type GetStoresParams = { page?: number; limit?: number; search?: string; sortBy?: string; sortOrder?: "asc" | "desc"; }; // 🔹 Main API Function export async function getStores( params: GetStoresParams ): Promise<ApiResponse<Store>> { const response = await apiClient.get("/stores", { params: { page: params.page ?? 1, limit: params.limit ?? 10, search: params.search ?? "", sortBy: params.sortBy ?? "createdAt", sortOrder: params.sortOrder ?? "desc", }, }); // 🔸 Adjust based on actual structure const stores = response.data?.data?.stores ?? []; const pagination = response.data?.data?.pagination ?? {}; return { data: stores, total: pagination.totalCount ?? stores.length, currentPage: pagination.currentPage ?? 1, totalPages: pagination.totalPages ?? 1, limit: pagination.limit ?? 10, }; }
+};
+
+// Result shape for store list queries (includes pagination flags)
+export type StoresQueryResult = {
+  data: Store[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+  limit: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+};
+
 // 🔹 Main API Function
 export async function getStores(
   params: GetStoresParams
-): Promise<ApiResponse<Store>> {
+): Promise<StoresQueryResult> {
   const response = await apiClient.get("/stores", {
     params: {
       page: params.page ?? 1,
@@ -64,7 +75,7 @@ export async function getStores(
   return {
     data: stores,
     total: pagination.totalCount ?? stores.length,
-    currentPage: pagination.currentPage ?? 10,
+    currentPage: pagination.currentPage ?? 1,
     totalPages: pagination.totalPages ?? 1,
     limit: pagination.limit ?? 10,
     hasNextPage: pagination.hasNextPage ?? false,
@@ -76,5 +87,5 @@ async function deleteStore(storeId: string): Promise<ApiResponse<null>> {
   const response = await apiClient.delete(`/stores/${storeId}`);
   return response.data;
 }
-// 🔸 Adjust based on actual structure const stores = response.data?.data?.stores ?? []; const pagination = response.data?.data?.pagination ?? {}; return { data: stores, total: pagination.totalCount ?? stores.length, currentPage: pagination.currentPage ?? 1, totalPages: pagination.totalPages ?? 1, limit: pagination.limit ?? 10, }; }
+
 export { createStore, sendStoreInvitationEmailCreateStore, deleteStore };

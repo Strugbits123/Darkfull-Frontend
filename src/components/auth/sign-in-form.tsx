@@ -39,8 +39,8 @@ export function LoginForm() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "saleemraza@gmail.com",
-      password: "qazwsxedc123@",
+      email: "",
+      password: "",
       rememberMe: false,
     },
   });
@@ -51,14 +51,15 @@ export function LoginForm() {
     try {
       setIsLoading(true);
       // Simulate API call
-      let value = await authService.login({
+      const value = await authService.login({
         email: data.email,
         password: data.password,
         rememberMe: data.rememberMe,
       });
-      const { user }: any = value.data;
-
-      if (user?.store?.isActive === false && user?.role == "STORE_ADMIN") {
+      const user = value.data?.user;
+      type StoreAdminUserLike = { role?: string; store?: { isActive?: boolean } };
+      const u = (user ?? {}) as StoreAdminUserLike;
+      if (u.store?.isActive === false && u.role === "STORE_ADMIN") {
         setShowConnect(true);
         setIsLoading(false);
       } else {
@@ -80,10 +81,10 @@ export function LoginForm() {
     }
   };
 
-  const createUrl = async (data: any) => {
+  const createUrl = async (data: { sallaClientId: string; sallaClientSecret: string }) => {
     try {
-      let url = await authService.createSallaConnectUrl(data);
-      const { authorizationUrl } = url.data;
+      const url = await authService.createSallaConnectUrl(data);
+      const { authorizationUrl } = url.data ?? {} as { authorizationUrl?: string };
       if (authorizationUrl) {
         window.open(authorizationUrl, "_blank"); // <-- opens in new tab
       } else {

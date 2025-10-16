@@ -79,10 +79,12 @@ export const setAuthCookiesOnlyToken = (tokens: {
  * Clear authentication cookies
  */
 export const clearAuthCookies = () => {
+  console.log('clearAuthCookies')
   deleteCookie('accessToken')
   deleteCookie('refreshToken')
   deleteCookie('accessTokenExpiresAt')
   deleteCookie('refreshTokenExpiresAt')
+  deleteCookie('role')
 }
 
 /**

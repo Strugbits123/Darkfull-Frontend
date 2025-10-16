@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableProps, TableColumn } from '@/lib/types/profile.types'
+import { DataTableProps } from '@/lib/types/profile.types'
 
 type SortDirection = 'asc' | 'desc' | null
 

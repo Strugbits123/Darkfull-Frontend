@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const SettingComponent = ({ role }: { role: string }) => {
-  let settingList = [
+  const settingList = [
     {
       role: "Admin",
       setting: [

@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/lib/services/auth.service";
 import ApiErrorHandler from '@/lib/utils/error-handler';
+import Image from "next/image";
+import Link from "next/link";
 
 const resetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -101,12 +103,14 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
             </Button>
             <div className="text-center text-sm">
               Remember your password?{' '}
-              <a href="/login" className="underline underline-offset-4">Sign In</a>
+              <Link href="/login" className="underline underline-offset-4">Sign In</Link>
             </div>
           </form>
           <div className="bg-muted relative hidden md:block">
-            <img
-              src="/auth/img-1.png"
+            <Image
+              src="/images/auth/img-1.png"
+              width={400}
+              height={300}
               alt="Reset Password Illustration"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />

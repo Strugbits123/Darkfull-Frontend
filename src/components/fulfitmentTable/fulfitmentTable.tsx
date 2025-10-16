@@ -38,7 +38,7 @@ export function OrdersTable({
   dataGet,
 }: {
   dataGet: {
-    data: Order[]
+    data: Order[] 
     headers: string[]
   }
 }) {

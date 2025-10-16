@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 
 import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
@@ -9,16 +9,32 @@ import { Badge } from "@/components/ui/badge";
 
 export default function FulfillmentsTable() {
   const [activeTab, setTab] = useState("orders");
-  const orderTable = [
+  type DirectorFulfillmentRow = {
+    id: string | number;
+    name: string;
+    image: string;
+    sku: string;
+    variantSize?: string;
+    variantColor?: string;
+    platform?: string;
+    status: keyof typeof STATUS_COLORS | string;
+  };
+
+  const orderTable: {
+    key: keyof DirectorFulfillmentRow | string;
+    title: string;
+    sortable?: boolean;
+    render?: (row: DirectorFulfillmentRow) => React.ReactNode;
+  }[] = [
     {
       key: "orderId",
       title: "Order ID",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: DirectorFulfillmentRow) => <span className="text-lg">{row.id}</span>,
     },
     {
       key: "brandName",
       title: "Brand",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: DirectorFulfillmentRow) => <span>{row.name}</span>,
     },
     {
       key: "key",
@@ -35,8 +51,10 @@ export default function FulfillmentsTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
+      render: (row: DirectorFulfillmentRow) => (
+        <Image
+          width={30}
+          height={10}
           src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
@@ -47,20 +65,26 @@ export default function FulfillmentsTable() {
       key: "name",
       title: "Product Name",
       sortable: true,
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: DirectorFulfillmentRow) => <span>{row.name}</span>,
     },
     { key: "sku", title: "SKU", sortable: true },
-    { key: "variant", title: "Product Variants" , render: (row: any) => (
-      <div className="flex gap-2">
-        <Badge className="bg-[#DBEAFE] text-black rounded-2xl">{row.variantSize}</Badge>
-        <Badge variant="outline">{row.variantColor}</Badge>
-      </div>
-    )},
+    {
+      key: "variant",
+      title: "Product Variants",
+      render: (row: DirectorFulfillmentRow) => (
+        <div className="flex gap-2">
+          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
+            {row.variantSize}
+          </Badge>
+          <Badge variant="outline">{row.variantColor}</Badge>
+        </div>
+      ),
+    },
     {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: DirectorFulfillmentRow) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -71,22 +95,29 @@ export default function FulfillmentsTable() {
       ),
     },
   ];
-  const transferTable = [
+  const transferTable: {
+    key: keyof DirectorFulfillmentRow | string;
+    title: string;
+    sortable?: boolean;
+    render?: (row: DirectorFulfillmentRow) => React.ReactNode;
+  }[] = [
     {
       key: "transferId",
       title: "Transfer ID",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: DirectorFulfillmentRow) => <span className="text-lg">{row.id}</span>,
     },
     {
       key: "brandName",
       title: "Brand",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: DirectorFulfillmentRow) => <span>{row.name}</span>,
     },
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
+      render: (row: DirectorFulfillmentRow) => (
+        <Image
+          width={30}
+          height={10}
           src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
@@ -96,7 +127,7 @@ export default function FulfillmentsTable() {
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: DirectorFulfillmentRow) => <span>{row.name}</span>,
     },
     { key: "sku", title: "SKU", sortable: true },
     { key: "platform", title: "Product Variants" },
@@ -104,7 +135,7 @@ export default function FulfillmentsTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: DirectorFulfillmentRow) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -142,7 +173,7 @@ export default function FulfillmentsTable() {
           </button>
         ))}
       </div>
-      <DataTable
+      <DataTable<DirectorFulfillmentRow>
         columns={activeTab === "transfer" ? transferTable : orderTable}
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}

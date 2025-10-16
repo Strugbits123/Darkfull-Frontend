@@ -13,6 +13,18 @@ import {
 
 import { Scan } from "lucide-react";
 import Image from "next/image";
+type NewOrderRow = {
+  id: number | string;
+  name: string;
+  sku: string;
+  image: string;
+  variantSize?: string;
+  variantColor?: string;
+  location?: string;
+  trackingId?: string;
+  status?: string;
+};
+
 const NewOrderModal = ({
   open,
   setOpenModal,
@@ -21,18 +33,23 @@ const NewOrderModal = ({
   setOpenModal: () => void;
 }) => {
     
-     const columns = [
+     const columns: {
+       key: keyof NewOrderRow | string;
+       title: string;
+       sortable?: boolean;
+       render?: (row: NewOrderRow) => React.ReactNode;
+     }[] = [
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: NewOrderRow) => <span>{row.id}</span>,
     },
     
  
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: NewOrderRow) => (
         <Image
           width={70}
           height={40}
@@ -45,19 +62,19 @@ const NewOrderModal = ({
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: NewOrderRow) => <span>{row.name}</span>,
       sortable: true,
     },
     {
       key: "sku",
       title: "SKU",
-      render: (row: any) => <span>{row.sku}</span>,
+      render: (row: NewOrderRow) => <span>{row.sku}</span>,
       sortable: true,
     },
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: NewOrderRow) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -69,7 +86,7 @@ const NewOrderModal = ({
     {
       key: "location",
       title: "Location",
-      render: (row: any) => (
+      render: (row: NewOrderRow) => (
         <div className="flex gap-2">
           {row.location}
         </div>
@@ -78,7 +95,7 @@ const NewOrderModal = ({
      {
       key: "trackingId",
       title: "Tracking ID",
-      render: (row: any) => (
+      render: (row: NewOrderRow) => (
         <div className="flex gap-2">
           {row.trackingId}
         </div>
@@ -88,7 +105,7 @@ const NewOrderModal = ({
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: () => (
         <Button className="bg-[#FFE9AE] hover:bg[#FFE9AE] rounded-2xl">
             <span className="text-black font-medium flex items-center">
                 Scan UPC
@@ -114,7 +131,7 @@ const NewOrderModal = ({
             </DialogDescription>
           </DialogHeader>
           <div className="">
-            <DataTable
+            <DataTable<NewOrderRow>
               columns={columns}
               data={[...Array(10).keys()].map((i) => ({ id: i, name: `Item ${i}`, sku: `SKU-${i}` , image: 'https://via.placeholder.com/150', variantSize: 'M', variantColor: 'Red', location: 'Aisle 3', trackingId: `TRK${1000 + i}`}))}
               searchKeys={[]}

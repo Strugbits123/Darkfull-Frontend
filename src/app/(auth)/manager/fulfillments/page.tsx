@@ -8,23 +8,24 @@ import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 import AssignWorker from "@/components/modal/assignWorker/page";
+import { TablesRowTypes } from "@/lib/types/table.types";
 
 export default function FulfillmentsTable() {
   const columns = [
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: TablesRowTypes) => <span>{row.id}</span>,
     },
     {
       key: "brand",
       title: "Brand",
-      render: (row: any) => <span>{row.brand}</span>,
+      render: (row: TablesRowTypes) => <span>{row.brand}</span>,
     },
     {
       key: "platform",
       title: "Platform",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
@@ -37,7 +38,7 @@ export default function FulfillmentsTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
@@ -50,19 +51,19 @@ export default function FulfillmentsTable() {
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: TablesRowTypes) => <span>{row.name}</span>,
       sortable: true,
     },
     {
       key: "sku",
       title: "SKU",
-      render: (row: any) => <span>{row.sku}</span>,
+      render: (row: TablesRowTypes) => <span>{row.sku}</span>,
       sortable: true,
     },
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -75,7 +76,7 @@ export default function FulfillmentsTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -89,8 +90,11 @@ export default function FulfillmentsTable() {
       key: "action",
       title: "Assign Task",
       sortable: true,
-      render: (row: any) => (
-        <Button className="bg-[#20A29A] hover:bg-[#20A29A] text-white" onClick={() => setAssignWorkerModal(true)}>
+      render: () => (
+        <Button
+          className="bg-[#20A29A] hover:bg-[#20A29A] text-white"
+          onClick={() => setAssignWorkerModal(true)}
+        >
           Assign Task
         </Button>
       ),
@@ -99,8 +103,11 @@ export default function FulfillmentsTable() {
   const [assignWorkerModal, setAssignWorkerModal] = useState(false);
   return (
     <div className="p-6 bg-card">
-      
-      <AssignWorker open={assignWorkerModal}  workers={[]} setOpenModal={() => setAssignWorkerModal(false)} />
+      <AssignWorker
+        open={assignWorkerModal}
+        workers={[]}
+        setOpenModal={() => setAssignWorkerModal(false)}
+      />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Fulfillments</h1>
@@ -115,14 +122,12 @@ export default function FulfillmentsTable() {
         </button>
       </div>
 
-      <DataTable
+      <DataTable<TablesRowTypes>
+        data={DUMMY_DATA as unknown as TablesRowTypes[]}
         columns={columns}
-        data={DUMMY_DATA}
         searchKeys={["name", "sku"]}
         showExportButton={true}
-        showCustomButton={
-         null
-        }
+        showCustomButton={null}
       />
     </div>
   );

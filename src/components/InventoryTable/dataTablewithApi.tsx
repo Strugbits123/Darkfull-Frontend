@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEventHandler, useMemo } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -41,7 +41,7 @@ type QueryResult<T> = {
 
 type DataTableProps<T> = {
   columns: Column<T>[];
-  queryKey: any[];
+  queryKey: readonly unknown[];
   queryFn: (params: {
     page: number;
     perPage: number;
@@ -58,7 +58,7 @@ type DataTableProps<T> = {
   placeholder?: string;
 };
 
-export default function DataTableApi<T extends Record<string, any>>({
+export default function DataTableApi<T extends Record<string, unknown>>({
   columns,
   queryKey,
   queryFn,
@@ -75,12 +75,12 @@ export default function DataTableApi<T extends Record<string, any>>({
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(perPageOptions[1]);
+  const perPage = perPageOptions[1];
 
   // 🔹 TanStack Query
   // use debouncedSearch in the query key and when calling queryFn so the API
   // is only invoked after the user stops typing for 300ms
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: [
       ...queryKey,
       page,
@@ -125,7 +125,7 @@ export default function DataTableApi<T extends Record<string, any>>({
                 setSearch(e.target.value);
                 debounce(() => setSearchData(e.target.value), 1500)();
               }}
-              className="max-w-xs w-full sm:w-64"
+              className="max-w-xs w-full sm:w-80"
             />
           )}
 
@@ -207,7 +207,7 @@ export default function DataTableApi<T extends Record<string, any>>({
                 </TableCell>
                 {columns.map((col, idx) => (
                   <TableCell key={idx}>
-                    {col.render ? col.render(row) : row[col.key as keyof T]}
+                    {col.render ? col.render(row) : String(row[col.key as keyof T] ?? "")}
                   </TableCell>
                 ))}
               </TableRow>
@@ -226,7 +226,7 @@ export default function DataTableApi<T extends Record<string, any>>({
             variant="outline"
             size="icon"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={data?.hasPreviousPage == false ? true : false}
+            disabled={page === 1}
           >
             <ChevronLeft size={16} />
           </Button>
@@ -235,7 +235,7 @@ export default function DataTableApi<T extends Record<string, any>>({
             variant="outline"
             size="icon"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={data?.hasNextPage == false ? true : false}
+            disabled={page >= totalPages}
           >
             <ChevronRight size={16} />
           </Button>

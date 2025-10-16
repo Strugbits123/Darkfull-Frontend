@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import authService from "@/lib/services/auth.service";
 import {
-  VerifyTokenApiResponse,
+  ApiResponse,
   VerifyTokenResponse,
 } from "@/lib/types/auth.types";
 import ApiErrorHandler from "@/lib/utils/error-handler";
@@ -33,27 +33,28 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function InvitePage() {
-  let [loading, setLoading] = useState(true);
-  let [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
   async function checkToken(token: string) {
     try {
-      let value: VerifyTokenApiResponse = await authService.verifyToken(token);
-      if (value?.data?.invitation) {
+      const value: ApiResponse<VerifyTokenResponse> = await authService.verifyToken(token);
+      if (value?.data) {
+        const invitation = value.data;
         setValue(
           "fullName",
-          value?.data?.invitation?.firstName +
+          invitation?.firstName +
             " " +
-            value?.data?.invitation?.lastName || ""
+            invitation?.lastName || ""
         );
-        setValue("firstName", value?.data?.invitation?.firstName || "uuu");
-        setValue("lastName", value?.data?.invitation?.lastName || "uuu");
-        setValue("email", value?.data?.invitation?.email || "");
-        setValue("phone", value?.data?.invitation?.phone || "");
-        setValue("storeName", value?.data?.invitation?.storeName || "");
+        setValue("firstName", invitation?.firstName || "uuu");
+        setValue("lastName", invitation?.lastName || "uuu");
+        setValue("email", invitation?.email || "");
+        setValue("phone", invitation?.phone || "");
+        setValue("storeName", invitation?.storeName || "");
       }
     } catch (error: unknown) {
       if (isAxiosError(error)) {
@@ -69,7 +70,8 @@ export default function InvitePage() {
     if (token) {
       checkToken(token);
     }
-  }, []);
+    
+  }, [token]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +81,6 @@ export default function InvitePage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
     control,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -93,7 +94,6 @@ export default function InvitePage() {
     },
   });
 
-  const rememberMe = watch("rememberMe");
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -272,7 +272,7 @@ export default function InvitePage() {
                   className="mt-10 w-10/12 mx-auto"
                   type="submit"
                   disabled={isLoading}
-                  isLoading={isLoading}
+                  loading={isLoading}
                 >
                   <p>Confirm</p>
                 </Button>

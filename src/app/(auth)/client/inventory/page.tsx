@@ -7,23 +7,40 @@ import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 
+type InventoryRow = {
+  id: string | number;
+  brand: string;
+  platform: string;
+  image: string;
+  name: string;
+  sku: string;
+  variantSize?: string;
+  variantColor?: string;
+  status: keyof typeof STATUS_COLORS | string;
+};
+
 export default function InventoryTable() {
-  const columns = [
+  const columns: {
+    key: keyof InventoryRow | string;
+    title: string;
+    sortable?: boolean;
+    render?: (row: InventoryRow) => React.ReactNode;
+  }[] = [
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: InventoryRow) => <span className="text-lg">{row.id}</span>,
     },
     {
       key: "brand",
       title: "Brand",
-      render: (row: any) => <span className="text-lg">{row.brand}</span>,
+      render: (row: InventoryRow) => <span className="text-lg">{row.brand}</span>,
     },
 
     {
       key: "platform",
       title: "Platform",
-      render: (row: any) => (
+      render: (row: InventoryRow) => (
         <Image
           width={70}
           height={40}
@@ -36,8 +53,10 @@ export default function InventoryTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
+      render: (row: InventoryRow) => (
+        <Image
+          width={40}
+          height={40}
           src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
@@ -47,14 +66,14 @@ export default function InventoryTable() {
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span className="text-lg">{row.name}</span>,
+      render: (row: InventoryRow) => <span className="text-lg">{row.name}</span>,
       sortable: true,
     },
     { key: "sku", title: "SKU", sortable: true },
     {
       key: "variant",
       title: "Variants",
-      render: (row: any) => (
+      render: (row: InventoryRow) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -67,7 +86,7 @@ export default function InventoryTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: InventoryRow) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -97,7 +116,7 @@ export default function InventoryTable() {
         </button>
       </div>
 
-      <DataTable
+      <DataTable<InventoryRow>
         columns={columns}
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}

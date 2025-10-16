@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,12 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  CalendarDays,
   Truck,
   Package,
   RefreshCcw,
   XCircle,
-  Hourglass,
   ChartLine,
   Calendar,
   Clock,
@@ -32,8 +29,14 @@ import {
 } from "recharts";
 import Image from "next/image";
 import { Calendar28 } from "@/components/Calender/calender";
+import React from "react";
 
-const data = [
+type ChartData = {
+  date: string;
+  orders: number;
+};
+
+const data: ChartData[] = [
   { date: "20/09", orders: 560 },
   { date: "21/09", orders: 690 },
   { date: "22/09", orders: 600 },
@@ -41,14 +44,127 @@ const data = [
   { date: "24/09", orders: 650 },
 ];
 
-export default function DirectorAnalytics() {
+// 🔹 Type definitions for props
+type StatCardProps = {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  background?: string;
+};
+
+type StockItem = {
+  label: string;
+  value: string | number;
+  color: string;
+};
+
+type MiniCardProps = {
+  title: string;
+  value?: string | number;
+  type?: "stock" | "orderTime" | string;
+  data?: StockItem[];
+  icon?: React.ReactNode;
+  subtitle?: string;
+  valueClass?: string;
+};
+
+// 🔹 Stat Card
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  subtitle,
+  icon,
+  background,
+}) => {
+  return (
+    <Card
+      className="min-h-[110px]"
+      style={{ backgroundColor: background ?? "#FFFFFF" }}
+    >
+      <CardContent className="p-4 flex flex-col justify-between h-full">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[16px] text-[#4B5563] uppercase tracking-wide font-medium">
+            {title}
+          </h4>
+          {icon && <span className="text-gray-400">{icon}</span>}
+        </div>
+        <p className="text-[30px] font-bold mt-3">{value}</p>
+        {subtitle && (
+          <p className="text-[16px] text-gray-500 font-medium">{subtitle}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// 🔹 Mini Card
+const MiniCard: React.FC<MiniCardProps> = ({
+  title,
+  value,
+  type,
+  data,
+  icon,
+  subtitle,
+  valueClass,
+}) => {
+  return (
+    <Card className="min-h-[100px]">
+      <CardContent className="flex flex-col justify-between h-full">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[18px] text-[#4B5563] font-semibold">{title}</h4>
+          {icon && <span className="text-gray-400">{icon}</span>}
+        </div>
+
+        {type === "stock" && data ? (
+          <div className="w-full flex flex-col justify-between mt-4">
+            {data.map((item) => (
+              <div key={item.label} className="flex justify-between py-2">
+                <p className="text-[16px] font-normal text-gray-500">
+                  {item.label}
+                </p>
+                <p
+                  style={{ color: item.color }}
+                  className="text-[16px] font-medium"
+                >
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <div className="mt-2">
+              <span
+                className="text-[40px] font-semibold"
+                style={{ color: valueClass }}
+              >
+                {value}
+              </span>
+            </div>
+            {subtitle && (
+              <p className="text-[14px] font-normal text-gray-500">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// 🔹 Main Component
+const DirectorAnalytics: React.FC = () => {
   return (
     <div className="px-3 py-3 space-y-6 bg-[#f9fafb]">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-[36px] font-semibold">Director Analytics</h2>
-          <p className="text-[14px] text-gray-500">View Analytics & Progress</p>
+          <p className="text-[14px] text-gray-500">
+            View Analytics & Progress
+          </p>
         </div>
         <div className="text-xs px-5 py-2 rounded-md bg-[#BBF7D0] text-green-700 font-medium">
           Connected with Salla
@@ -57,11 +173,6 @@ export default function DirectorAnalytics() {
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
-        {/* <Button
-          variant="outline"
-          className="flex items-center justify-between gap-2 w-full md:w-64 h-10 text-[14px]"
-       
-        </Button>  */}
         <Calendar28 showTitle={false} />
         <Select>
           <SelectTrigger className="w-full md:w-64 h-10 text-[14px]">
@@ -79,7 +190,7 @@ export default function DirectorAnalytics() {
         <StatCard
           title="TOTAL ORDERS"
           value="1,247"
-          background="##FFFFFF"
+          background="#FFFFFF"
           subtitle="Earliest: 4.2 hours"
           icon={<Calendar className="w-6 h-6 text-gray-400" />}
         />
@@ -161,7 +272,6 @@ export default function DirectorAnalytics() {
                 dataKey="orders"
                 stroke="#3b82f1"
                 strokeWidth={2}
-                fontSize={24}
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}
               />
@@ -219,88 +329,6 @@ export default function DirectorAnalytics() {
       </div>
     </div>
   );
-}
+};
 
-function StatCard({ title, value, subtitle, icon, background }: any) {
-  return (
-    <Card
-      className="min-h-[110px]"
-      style={{ backgroundColor: background ?? "#FFFFFF" }}
-    >
-      <CardContent className="p-4 flex flex-col justify-between h-full">
-        <div className="flex items-center justify-between">
-          <h4 className="text-[16px] text-[#4B5563] uppercase tracking-wide font-medium">
-            {title}
-          </h4>
-          {icon && <span className="text-gray-400">{icon}</span>}
-        </div>
-        <p className="text-[30px] font-bold mt-3">{value}</p>
-        <p className="text-[16px] text-gray-500 weight-medium">{subtitle}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function MiniCard({
-  title,
-  value,
-  type,
-  data,
-  icon,
-  subtitle,
-  valueClass,
-}: any) {
-  return (
-    <Card className="min-h-[100px]">
-      <CardContent className="flex flex-col justify-between h-full">
-        <div className="flex items-center justify-between">
-          <h4 className="text-[18px] text-[#4B5563] font-semibold">{title}</h4>
-          {icon && <span className="text-gray-400 ">{icon}</span>}
-        </div>
-        {type === "stock" && (
-          <div>
-            <div className="flex flex-row gap-2 w-full mt-4">
-              {data ? (
-                <div className="w-full flex flex-col justify-between ">
-                  {data.map((item: any) => (
-                    <div
-                      key={item.label}
-                      className="flex flex-row gap-2 justify-between py-2"
-                    >
-                      <p className="text-[16px] font-normal text-gray-500">
-                        {item.label}
-                      </p>
-                      <p
-                        style={{ color: item.color }}
-                        className={`text-[16px] font-medium`}
-                      >
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        )}
-        {type !== "stock" && (
-          <div>
-            <div className="flex flex-row  w-full mt-2">
-              <span
-                className="text-[40px] font-semibold"
-                style={{ color: valueClass }}
-              >
-                {value}
-              </span>
-            </div>
-            <div className="flex flex-row gap-2 w-full ">
-              <p className="text-[14px] font-normal text-gray-500">
-                {subtitle}
-              </p>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+export default DirectorAnalytics;

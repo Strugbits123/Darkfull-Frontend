@@ -2,33 +2,32 @@
 
 import React, { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
-import AssignWorker from "@/components/modal/assignWorker/page";
 import PackingModal from "@/components/modal/workerModal/PackingModal/packingModal";
 import ShipmentModal from "@/components/modal/workerModal/shipmentModal/shipmentModal";
 import NewOrderModal from "@/components/modal/workerModal/newOrderModal/newOrderModal";
 import TrackingIdModal from "@/components/modal/workerModal/TrackingIdModal/trackingIdModal";
+import { TablesRowTypes } from "@/lib/types/table.types";
 
 export default function FulfillmentsTable() {
   const columns = [
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: TablesRowTypes) => <span>{row.id}</span>,
     },
     {
       key: "brand",
       title: "Brand",
-      render: (row: any) => <span>{row.brand}</span>,
+      render: (row: TablesRowTypes) => <span>{row.brand}</span>,
     },
     {
       key: "platform",
       title: "Platform",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
@@ -41,7 +40,7 @@ export default function FulfillmentsTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
@@ -54,19 +53,19 @@ export default function FulfillmentsTable() {
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: TablesRowTypes) => <span>{row.name}</span>,
       sortable: true,
     },
     {
       key: "sku",
       title: "SKU",
-      render: (row: any) => <span>{row.sku}</span>,
+      render: (row: TablesRowTypes) => <span>{row.sku}</span>,
       sortable: true,
     },
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -79,7 +78,7 @@ export default function FulfillmentsTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <button
           onClick={() => {
             checkTheStatus(row.status);
@@ -96,7 +95,6 @@ export default function FulfillmentsTable() {
       ),
     },
   ];
-  const [assignWorkerModal, setAssignWorkerModal] = useState(false);
   const [modalShow, setModalShow] = useState({
     pickedModal: false,
     shippedModal: false,
@@ -136,8 +134,7 @@ export default function FulfillmentsTable() {
 
       <DataTable
         columns={columns}
-        data={DUMMY_DATA}
-        searchKeys={["name", "sku"]}
+        data={(DUMMY_DATA as unknown) as TablesRowTypes[]}        searchKeys={["name", "sku"]}
         showExportButton={true}
         showCustomButton={null}
       />

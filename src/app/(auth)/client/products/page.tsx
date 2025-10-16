@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import AssignModal from "@/components/modal/AssignModal/assignModal";
@@ -8,16 +8,35 @@ import DataTable from "@/components/InventoryTable/dataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+type ProductRow = {
+  id: string | number;
+  platform: string;
+  image: string;
+  name: string;
+  variantSize?: string;
+  variantColor?: string;
+  sku: string;
+  quantity: number;
+};
+
 export default function FulfillmentsTable() {
-  const [openAssignModal, setOpenAssignModal]: any = useState({
+  const [openAssignModal, setOpenAssignModal] = useState<{
+    open: boolean;
+    products: ProductRow[];
+  }>({
     open: false,
     products: [],
   });
-  const columns = [
+  const columns: {
+    key: keyof ProductRow | string;
+    title: string;
+    sortable?: boolean;
+    render?: (row: ProductRow) => React.ReactNode;
+  }[] = [
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: ProductRow) => (
         <Image
           width={70}
           height={40}
@@ -31,7 +50,7 @@ export default function FulfillmentsTable() {
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: ProductRow) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -44,7 +63,7 @@ export default function FulfillmentsTable() {
     {
       key: "quantity",
       title: "Available Quantity",
-      render: (row: any) => {
+      render: (row: ProductRow) => {
         return <span className="text-lg text-center">{row.quantity} pcs</span>;
       },
     },
@@ -53,7 +72,7 @@ export default function FulfillmentsTable() {
       key: "action",
       title: "Action",
       sortable: true,
-      render: (row: any) => (
+      render: (row: ProductRow) => (
         <Button
           onClick={() => setOpenAssignModal({ open: true, products: [row] })}
           variant="outline"
@@ -75,7 +94,7 @@ export default function FulfillmentsTable() {
             products: openAssignModal.products,
           })
         }
-        products={openAssignModal.products}
+        products={(openAssignModal.products as unknown) as Array<{id: string, name: string, variant: string, sku: string, returns: number, quantity: number, img: string}>}
       />
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -96,11 +115,11 @@ export default function FulfillmentsTable() {
       </div>
 
       {/* Table */}
-      <DataTable
-        data={DUMMY_DATA}
+      <DataTable<ProductRow>
+        data={(DUMMY_DATA as unknown) as ProductRow[]}
         columns={columns}
         filterOptions={Object.keys(STATUS_COLORS)}
-        searchKeys={["name", "sku", "brand"]}
+        searchKeys={["name", "sku"]}
         showExportButton={false}
         showCustomButton={
           <div>

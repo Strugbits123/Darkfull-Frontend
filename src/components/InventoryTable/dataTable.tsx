@@ -44,7 +44,14 @@ type DataTableProps<T> = {
   showFilterByStatus?: boolean;
 };
 
-export default function DataTable<T extends Record<string, any>>({
+function toStringSafe(val: unknown): string {
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number' || typeof val === 'boolean' || typeof val === 'bigint') return String(val);
+  if (val === null || val === undefined) return '';
+  return JSON.stringify(val);
+}
+
+export default function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
   searchKeys = [],
@@ -52,14 +59,13 @@ export default function DataTable<T extends Record<string, any>>({
   showExportButton = true,
   placeholder ="",
   perPageOptions = [5, 10, 25, 50],
-  showFilterByStatus = true,
   showCustomButton,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string | undefined>();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(perPageOptions[1]);
+const perPage =perPageOptions[1]
   // 🔍 Filtering + Searching + Sorting
   const filteredData = useMemo(() => {
     let rows = [...data];
@@ -68,7 +74,7 @@ export default function DataTable<T extends Record<string, any>>({
     if (search && searchKeys.length) {
       rows = rows.filter((row) =>
         searchKeys.some((key) =>
-          row[key]?.toString().toLowerCase().includes(search.toLowerCase())
+          toStringSafe(row[key]).toLowerCase().includes(search.toLowerCase())
         )
       );
     }
@@ -76,19 +82,19 @@ export default function DataTable<T extends Record<string, any>>({
     // Filter
     if (filter) {
       rows = rows.filter((row) =>
-        Object.values(row).some((val) => val?.toString() === filter)
+        Object.values(row).some((val) => toStringSafe(val) === filter)
       );
     }
 
     // Sort
     if (sortKey) {
       rows.sort((a, b) =>
-        a[sortKey!].toString().localeCompare(b[sortKey!].toString())
+        toStringSafe(a[sortKey!]).localeCompare(toStringSafe(b[sortKey!]))
       );
     }
 
     return rows;
-  }, [search, filter, sortKey, data]);
+  }, [search, filter, sortKey, data,searchKeys]);
 
   // 📄 Pagination
   const paginatedData = useMemo(() => {
@@ -174,7 +180,9 @@ export default function DataTable<T extends Record<string, any>>({
               </TableCell>
               {columns.map((col,index) => (
                 <TableCell key={index + Math.random()}>
-                  {col.render ? col.render(row) : row[col.key as keyof T]}
+                  {col.render
+                    ? col.render(row)
+                    : (<> {toStringSafe(row[col.key as keyof T])} </>)}
                 </TableCell>
               ))}
             </TableRow>
