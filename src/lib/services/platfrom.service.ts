@@ -10,7 +10,7 @@ import {
 async function createStore(
   data: CreateStore
 ): Promise<ApiResponse<CreateStoreResponse>> {
-  const response = await apiClient.post(`/stores`, data);
+  const response = await apiClient.post(`/platforms`, data);
   return response.data;
 }
 

@@ -5,7 +5,7 @@ export interface CreateStore {
 
 export interface CreateStoreResponse {
   data: {
-    store: {
+    platform: {
       id: string;
       name: string;
       slug: string;
@@ -39,11 +39,11 @@ export interface sendInvitationEmailResponse {
   };
 }
 export interface sendInvitationEmailParams {
-  storeId: string;
+  platformId: string;
   email: string;
   fullName: string;
   firstName: string;
   lastName: string;
   role: string;
-  storeName: string;
+  storeName?: string;
 }

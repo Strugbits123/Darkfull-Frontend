@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import {
   createStore,
   sendStoreInvitationEmailCreateStore,
-} from "@/lib/services/store.service";
+} from "@/lib/services/platfrom.service";
 import type { ApiResponse } from "@/lib/types/auth.types";
 import type { CreateStoreResponse } from "@/lib/types/store.types";
 import { toast } from "sonner";
@@ -91,13 +91,13 @@ const CreateAdminModal = ({
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       });
       await sendStoreInvitationEmailCreateStore({
-        storeId: response.data?.data?.store?.id as string,
         email: email,
-        fullName: `${firstName} ${lastName}`,
         firstName: firstName,
         lastName: lastName,
-        storeName: name,
-        role: "STORE_ADMIN",
+        fullName: `${firstName} ${lastName}`,
+        role: "DIRECTOR",
+        platformId: response.data?.data?.platform?.id as string,
+        // storeName: name,
       });
       toast.success("Store created and invitation sent successfully!");
       setOpenModal();

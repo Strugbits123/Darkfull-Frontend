@@ -4,8 +4,8 @@ import { PencilIcon, Send, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateAdminModal from "@/components/modal/createAdmin/page";
 import DataTableApi from "@/components/InventoryTable/dataTablewithApi";
-import { getStores } from "@/lib/services/store.service";
-import type { Store } from "@/lib/services/store.service";
+import { getStores } from "@/lib/services/platfrom.service";
+import type { Store } from "@/lib/services/platfrom.service";
 import { TablesRowTypes } from "@/lib/types/table.types";
 const StorePage = () => {
   const storeAdminTable = [
