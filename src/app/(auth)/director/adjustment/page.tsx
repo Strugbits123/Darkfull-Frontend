@@ -1,33 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React, { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
-import Image from "next/image";
-import { title } from "process";
-import { DUMMY_DATA, Product, STATUS_COLORS } from "@/constant/product";
+import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import AdjustmentModal from "@/components/modal/adjustmentModal/adjustModal";
 import DataTable from "@/components/InventoryTable/dataTable";
-
-
+import Image from "next/image";
+import { TablesRowTypes } from "@/lib/types/table.types";
 
 export default function AdjustmentTable() {
   const [activeTab, setActiveTab] = useState<"jobs" | "view">("jobs");
@@ -36,9 +17,11 @@ export default function AdjustmentTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
-          src={row.image}
+      render: (row: TablesRowTypes) => (
+        <Image
+          width={30}
+          height={10}
+          src={row?.image??''}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
         />
@@ -48,9 +31,11 @@ export default function AdjustmentTable() {
     {
       key: "variant",
       title: "Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
-          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">{row.variantSize}</Badge>
+          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
+            {row.variantSize}
+          </Badge>
           <Badge variant="outline">{row.variantColor}</Badge>
         </div>
       ),
@@ -77,20 +62,22 @@ export default function AdjustmentTable() {
     {
       key: "id",
       title: "Transfer ID",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: TablesRowTypes) => <span className="text-lg">{row.id}</span>,
     },
     {
       key: "brandName",
       title: "Brand",
       sortable: true,
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: TablesRowTypes) => <span>{row.name}</span>,
     },
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
-          src={row.image}
+      render: (row: TablesRowTypes) => (
+        <Image
+          width={20}
+          height={10}
+          src={row?.image??''}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
         />
@@ -100,7 +87,7 @@ export default function AdjustmentTable() {
       key: "name",
       title: "Product Name",
       sortable: true,
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: TablesRowTypes) => <span>{row.name}</span>,
     },
     { key: "sku", title: "SKU", sortable: true },
     { key: "platform", title: "Fulfillment Point" },
@@ -108,10 +95,10 @@ export default function AdjustmentTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
-            STATUS_COLORS[row.status]
+            STATUS_COLORS[row?.status??'']
           }`}
         >
           {row.status}
@@ -129,7 +116,6 @@ export default function AdjustmentTable() {
             Assign and view returned order
           </p>
         </div>
-       
       </div>
 
       <AdjustmentModal open={showModal} setValue={setShowModal} />
@@ -153,7 +139,7 @@ export default function AdjustmentTable() {
       <DataTable
         showExportButton={activeTab === "jobs" ? false : true}
         columns={activeTab === "jobs" ? columnsJobs : columnsView}
-        data={DUMMY_DATA}
+        data={(DUMMY_DATA as unknown) as TablesRowTypes[]}
         searchKeys={["name", "sku"]}
         filterOptions={Object.keys(STATUS_COLORS)}
       />

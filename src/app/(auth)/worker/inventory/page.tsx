@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
-import AssignModal from "@/components/modal/AssignModal/assignModal";
 import AssignInventory from "@/components/modal/assignInventory/assignInventory";
 import PutawayModal from "@/components/modal/workerModal/PutawayModal/putway";
 import ReceivedModal from "@/components/modal/workerModal/receivedModal/receivedModal";
+import Image from "next/image";
+import { AssignProduct, TablesRowTypes } from "@/lib/types/table.types";
 
 export default function InventoryTable() {
   const [modalShow, setModalShow] = useState({
@@ -29,9 +29,11 @@ export default function InventoryTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
-          src={row.image}
+      render: (row: TablesRowTypes) => (
+        <Image
+        width={30}
+        height={10}
+        src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
         />
@@ -41,7 +43,7 @@ export default function InventoryTable() {
     {
       key: "variant",
       title: "Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge>{row.variantSize}</Badge>
           <Badge variant="outline">{row.variantColor}</Badge>
@@ -53,13 +55,13 @@ export default function InventoryTable() {
     {
       key: "quantity",
       title: "Quantity",
-      render: (row: any) => <span className="text-lg">{row.quantity}</span>,
+      render: (row: TablesRowTypes) => <span className="text-lg">{row.quantity}</span>,
     },
     {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <button
           onClick={() => {
             checkTheStatus(row.status);
@@ -79,7 +81,7 @@ export default function InventoryTable() {
 
   const [openAssignModal, setOpenAssignModal] = useState<{
     open: boolean;
-    products: any[];
+    products: AssignProduct[];
   }>({ open: false, products: [] });
   return (
     <div className="p-6 bg-card">
@@ -102,8 +104,7 @@ export default function InventoryTable() {
 
       <DataTable
         columns={columnsView}
-        data={DUMMY_DATA}
-        searchKeys={["name", "sku"]}
+        data={(DUMMY_DATA as unknown) as TablesRowTypes[]}        searchKeys={["name", "sku"]}
         filterOptions={Object.keys(STATUS_COLORS)}
       />
       <ReceivedModal

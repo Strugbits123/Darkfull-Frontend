@@ -1,25 +1,23 @@
+"use client";
 import { cn } from "@/lib/utils";
+import { clearAuthCookies } from "@/lib/utils/cookies";
 import { Layers, Package, Settings, LogOut } from "lucide-react";
 import { usePathname } from "next/dist/client/components/navigation";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 const listSidebarUserPermission = [
   {
-    role: "SuperAdmin",
+    role: "SUPER_ADMIN",
     permissions: [
       {
         title: "Menu",
-        items: [{ label: "Stores", icon: Layers, active: false }],
-      },
-      {
-        title: "Others",
-        items: [{ label: "Integration", icon: Settings, active: false }],
+        items: [{ label: "Director", icon: Layers, active: false }],
       },
     ],
   },
 
   {
-    role: "Director",
+    role: "DIRECTOR",
     permissions: [
       {
         title: "Menu",
@@ -37,7 +35,7 @@ const listSidebarUserPermission = [
     ],
   },
   {
-    role: "Admin",
+    role: "ADMIN",
     permissions: [
       {
         title: "Menu",
@@ -54,7 +52,7 @@ const listSidebarUserPermission = [
   },
 
   {
-    role: "Client",
+    role: "CLIENT",
     permissions: [
       {
         title: "Menu",
@@ -74,7 +72,7 @@ const listSidebarUserPermission = [
   },
 
   {
-    role: "Manager",
+    role: "MANAGER",
     permissions: [
       {
         title: "Menu",
@@ -93,7 +91,7 @@ const listSidebarUserPermission = [
     ],
   },
   {
-    role: "Worker",
+    role: "WORKER",
     permissions: [
       {
         title: "Menu",
@@ -107,10 +105,12 @@ const listSidebarUserPermission = [
   },
 ];
 
-export function SidebarNav() {
+export function SidebarNav({ role }: { role: string }) {
+  console.log("User Role in SidebarNav:", role); // Debug log to check the role prop
   const pathname = usePathname();
   const currentPath = pathname?.split("/")?.[2] ?? ""; // Get the second segment of the path
-  const userRole = "Worker"; // Example role, this should come from your auth logic
+  const userRole = role.toUpperCase(); // Example role, this should come from your auth logic
+  const router = useRouter();
   return (
     <aside className="flex w-64 flex-col rounded-2xl bg-sidebar min-h-[calc(70vh-40px)] p-6 shadow-sm">
       <nav className="flex flex-1 flex-col space-y-8">
@@ -150,7 +150,10 @@ export function SidebarNav() {
       </nav>
 
       <button
-        type="button"
+        onClick={() => {
+          clearAuthCookies();
+          router.refresh();
+        }}
         className="mt-8 flex items-center justify-center gap-3 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[color:color-mix(in_srgb,var(--primary)_92%,var(--card)_8%)]"
       >
         <LogOut className="h-5 w-5" aria-hidden="true" />

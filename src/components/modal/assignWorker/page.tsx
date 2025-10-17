@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -20,7 +19,6 @@ import Image from "next/image";
 const AssignWorker = ({
   open,
   setOpenModal,
-  workers,
 }: {
   open: boolean;
   setOpenModal: () => void;

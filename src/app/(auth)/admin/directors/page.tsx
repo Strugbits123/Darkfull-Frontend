@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const Directors = () => {
@@ -78,7 +79,9 @@ const Directors = () => {
               {tableHeader.map((header) => (
                 <TableCell key={header.key}>
                   {header.key === "image" ? (
-                    <img
+                    <Image
+                      width={30}
+                      height={10} 
                       src={item.image}
                       alt={item.name}
                       className="h-10 w-10 rounded-md object-cover"

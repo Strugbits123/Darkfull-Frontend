@@ -18,8 +18,6 @@ import {
 const PutawayModal = ({
   open,
   setOpenModal,
-  products,
-  showQuantity,
 }: {
   open: boolean;
   setOpenModal: () => void;

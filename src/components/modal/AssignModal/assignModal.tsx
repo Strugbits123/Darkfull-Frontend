@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 
-const AssignModal = ({ open, setOpenModal, products }: {open: boolean, setOpenModal: () => void, products: Array<{id: string, name: string, variant: string, sku: string, returns: number, quantity: number, img: string}>}) => {
+const AssignModal = ({ open, setOpenModal }: {open: boolean, setOpenModal: () => void, products: Array<{id: string, name: string, variant: string, sku: string, returns: number, quantity: number, img: string}>}) => {
     return (
          <div className="flex flex-col gap-4 p-4">
       {/* Modal 1: Manage Return Assignment */}

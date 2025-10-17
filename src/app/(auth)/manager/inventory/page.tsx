@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
-import AssignModal from "@/components/modal/AssignModal/assignModal";
 import AssignInventory from "@/components/modal/assignInventory/assignInventory";
-
+import { AssignProduct, TablesRowTypes } from "@/lib/types/table.types";
+import Image from "next/image";
 
 export default function InventoryTable() {
   const [activeTab, setActiveTab] = useState<"jobs" | "view">("view");
@@ -16,8 +16,10 @@ export default function InventoryTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
+      render: (row: TablesRowTypes) => (
+        <Image
+          width={30}
+          height={10}
           src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
@@ -28,9 +30,11 @@ export default function InventoryTable() {
     {
       key: "variant",
       title: "Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
-         <Badge className="bg-[#DBEAFE] text-black rounded-2xl">{row.variantSize}</Badge>
+          <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
+            {row.variantSize}
+          </Badge>
           <Badge variant="outline">{row.variantColor}</Badge>
         </div>
       ),
@@ -40,13 +44,15 @@ export default function InventoryTable() {
     {
       key: "quantity",
       title: "Quantity",
-      render: (row: any) => <span className="text-lg">{row.quantity}</span>,
+      render: (row: TablesRowTypes) => (
+        <span className="text-lg">{row.quantity}</span>
+      ),
     },
     {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -74,8 +80,10 @@ export default function InventoryTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
-        <img
+      render: (row: TablesRowTypes) => (
+        <Image
+          width={30}
+          height={10}
           src={row.image}
           alt={row.name}
           className="h-10 w-10 rounded-md object-cover"
@@ -86,7 +94,7 @@ export default function InventoryTable() {
     {
       key: "variant",
       title: "Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge>{row.variantSize}</Badge>
           <Badge variant="outline">{row.variantColor}</Badge>
@@ -98,13 +106,15 @@ export default function InventoryTable() {
     {
       key: "quantity",
       title: "Quantity",
-      render: (row: any) => <span className="text-lg">{row.quantity}</span>,
+      render: (row: TablesRowTypes) => (
+        <span className="text-lg">{row.quantity}</span>
+      ),
     },
     {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -118,7 +128,7 @@ export default function InventoryTable() {
 
   const [openAssignModal, setOpenAssignModal] = useState<{
     open: boolean;
-    products: any[];
+    products: AssignProduct[];
   }>({ open: false, products: [] });
   return (
     <div className="p-6 bg-card">
@@ -155,8 +165,7 @@ export default function InventoryTable() {
 
       <DataTable
         columns={activeTab === "jobs" ? columnsJobs : columnsView}
-        data={DUMMY_DATA}
-        searchKeys={["name", "sku"]}
+        data={(DUMMY_DATA as unknown) as TablesRowTypes[]}        searchKeys={["name", "sku"]}
         filterOptions={Object.keys(STATUS_COLORS)}
       />
     </div>

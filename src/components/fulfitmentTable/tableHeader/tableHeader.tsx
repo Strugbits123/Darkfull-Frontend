@@ -94,7 +94,7 @@ const TableHeader = ({ data }: { data: DataInterface }) => {
             </Button>
           </div>
 
-          <OrdersTable dataGet={data ?? []} headers={data.headers ?? []} />
+          <OrdersTable dataGet={{ data: data.data ?? [], headers: data.headers ?? [] }} />
         </TabsContent>
 
         <TabsContent value="transfer">

@@ -47,10 +47,13 @@ export const setAuthCookies = (tokens: {
   refreshToken: string
   accessTokenExpiresAt: string
   refreshTokenExpiresAt: string
+  userRole: string
 }) => {
   // Set access token (shorter expiry)
   setCookie('accessToken', tokens.accessToken, 1) // 1 day
-  
+  if (tokens.userRole) {
+    setCookie('role', tokens.userRole, 7) // 7 day
+  }
   // Set refresh token (longer expiry)
   setCookie('refreshToken', tokens.refreshToken, 7) // 7 days
   
@@ -59,14 +62,29 @@ export const setAuthCookies = (tokens: {
   setCookie('refreshTokenExpiresAt', tokens.refreshTokenExpiresAt, 7)
 }
 
+export const setAuthCookiesOnlyToken = (tokens: {
+  accessToken: string
+  refreshToken: string
+
+}) => {
+  // Set access token (shorter expiry)
+  setCookie('accessToken', tokens.accessToken, 1) // 1 day
+  // Set refresh token (longer expiry)
+  setCookie('refreshToken', tokens.refreshToken, 7) // 7 days
+}
+
+
+
 /**
  * Clear authentication cookies
  */
 export const clearAuthCookies = () => {
+  console.log('clearAuthCookies')
   deleteCookie('accessToken')
   deleteCookie('refreshToken')
   deleteCookie('accessTokenExpiresAt')
   deleteCookie('refreshTokenExpiresAt')
+  deleteCookie('role')
 }
 
 /**

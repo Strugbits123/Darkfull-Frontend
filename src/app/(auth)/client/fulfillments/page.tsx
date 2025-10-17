@@ -8,22 +8,39 @@ import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
 
+type FulfillmentRow = {
+  id: string | number;
+  brand: string;
+  platform: string;
+  image: string;
+  name: string;
+  sku: string;
+  variantSize?: string;
+  variantColor?: string;
+  status: keyof typeof STATUS_COLORS | string;
+};
+
 export default function FulfillmentsTable() {
-  const columns = [
+  const columns: {
+    key: keyof FulfillmentRow | string;
+    title: string;
+    sortable?: boolean;
+    render?: (row: FulfillmentRow) => React.ReactNode;
+  }[] = [
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: FulfillmentRow) => <span>{row.id}</span>,
     },
     {
       key: "brand",
       title: "Brand",
-      render: (row: any) => <span>{row.brand}</span>,
+      render: (row: FulfillmentRow) => <span>{row.brand}</span>,
     },
     {
       key: "platform",
       title: "Platform",
-      render: (row: any) => (
+      render: (row: FulfillmentRow) => (
         <Image
           width={70}
           height={40}
@@ -36,7 +53,7 @@ export default function FulfillmentsTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: FulfillmentRow) => (
         <Image
           width={70}
           height={40}
@@ -49,19 +66,19 @@ export default function FulfillmentsTable() {
     {
       key: "name",
       title: "Product Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: FulfillmentRow) => <span>{row.name}</span>,
       sortable: true,
     },
     {
       key: "sku",
       title: "SKU",
-      render: (row: any) => <span>{row.sku}</span>,
+      render: (row: FulfillmentRow) => <span>{row.sku}</span>,
       sortable: true,
     },
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: FulfillmentRow) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -74,7 +91,7 @@ export default function FulfillmentsTable() {
       key: "status",
       title: "Status",
       sortable: true,
-      render: (row: any) => (
+      render: (row: FulfillmentRow) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             STATUS_COLORS[row.status]
@@ -101,7 +118,7 @@ export default function FulfillmentsTable() {
         </button>
       </div>
 
-      <DataTable
+      <DataTable<FulfillmentRow>
         columns={columns}
         data={DUMMY_DATA}
         searchKeys={["name", "sku"]}

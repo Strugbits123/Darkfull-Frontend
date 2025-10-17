@@ -1,34 +1,34 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
+import React, { useState } from "react";
+import { DUMMY_DATA } from "@/constant/product";
 import DataTable from "@/components/InventoryTable/dataTable";
-import { PencilIcon, Send, Store, TrashIcon } from "lucide-react";
+import { PencilIcon, Send, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateAdminModal from "@/components/modal/createAdmin/page";
+import { TablesRowTypes } from "@/lib/types/table.types";
 const IntegrationPage = () => {
-
   const integrationTable = [
     {
       key: "storeAdminName",
       title: "Store Admin Name",
-      render: (row: any) => <span>{row.name}</span>,
+      render: (row: TablesRowTypes) => <span>{row.name}</span>,
     },
     {
       key: "adminName",
       title: "Admin Name",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: TablesRowTypes) => <span>{row.id}</span>,
     },
     {
       key: "admin_email",
       title: "Admin Email",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <span className="">{row.admin_email || "N/A"}</span>
       ),
     },
     {
       key: "action",
       title: "Action",
-      render: (row: any) => (
+      render: () => (
         <div>
           <button className="text-gray-600 underline bg-gray-300 rounded-md px-2 py-2 mr-3">
             <PencilIcon className="w-4 h-4" />
@@ -42,7 +42,7 @@ const IntegrationPage = () => {
     {
       key: "invite",
       title: "Send Invite",
-      render: (row: any) => (
+      render: () => (
         <div>
           <Button className="bg-[#20A29A] hover:bg-[#20A29A] text-white">
             <Send className="text-white" />
@@ -61,14 +61,16 @@ const IntegrationPage = () => {
           <h1 className="text-2xl font-bold">Manage Store & Admin</h1>
           <p className="text-sm text-gray-500">Manage Admin </p>
         </div>
-        
       </div>
-      <CreateAdminModal open={createAdminModalOpen} setOpenModal={() => setCreateAdminModalOpen(!createAdminModalOpen)} />
-      
+      <CreateAdminModal
+        data={null}
+        open={createAdminModalOpen}
+        setOpenModal={() => setCreateAdminModalOpen(!createAdminModalOpen)}
+      />
       <DataTable
         columns={integrationTable}
-        data={DUMMY_DATA}
-        searchKeys={[]}
+        data={DUMMY_DATA as unknown as TablesRowTypes[]}
+        searchKeys={["name"]}
         filterOptions={[]}
         showExportButton={false}
         showFilterByStatus={false}

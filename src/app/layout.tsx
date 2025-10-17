@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import ReduxProvider from "@/store/ReduxProvider";
 
@@ -32,15 +32,16 @@ export default function RootLayout({
         className={`${montserrat.variable} ${geistMono.variable} antialiased`}
       > 
       <ReduxProvider>
-        {/* <ThemeProvider
+        <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
-        > */}
+          themes={["light", "dark", "blue", "green", "purple", "orange", "pink", "gray"]}
+        >
             {children}
             <Toaster richColors />
-        {/* </ThemeProvider> */}
+        </ThemeProvider>
         </ReduxProvider>
       </body>
     </html>

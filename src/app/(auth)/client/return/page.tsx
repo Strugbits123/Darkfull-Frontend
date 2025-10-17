@@ -1,12 +1,23 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DUMMY_DATA, STATUS_COLORS } from "@/constant/product";
 import ReturnModal from "@/components/modal/returnModal/returnModal";
 import DataTable from "@/components/InventoryTable/dataTable";
+import { AssignProduct, TablesRowTypes } from "@/lib/types/table.types";
+
+const toAssignProduct = (row: TablesRowTypes): AssignProduct => ({
+  id: String(row.id),
+  name: row.name,
+  variant: [row.variantSize, row.variantColor].filter(Boolean).join(" / "),
+  sku: row.sku ?? "",
+  returns: 0,
+  quantity: row.quantity ?? 0,
+  img: row.image ?? "",
+});
 
 export default function ReturnTable() {
   const [tab, setTab] = useState("jobs");
@@ -14,17 +25,17 @@ export default function ReturnTable() {
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span>{row.id}</span>,
+      render: (row: TablesRowTypes) => <span>{row.id}</span>,
     },
     {
       key: "platform",
       title: "Platform",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
           src={"/images/platform.svg"}
-          alt={row.platform}
+          alt={(row.platform ?? "")}
           className=" rounded-md "
         />
       ),
@@ -32,12 +43,12 @@ export default function ReturnTable() {
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
-          src={row.image}
-          alt={row.name}
+          src={(row.image ?? "")}
+          alt={(row.name ?? "")}
           className="h-10 w-10 rounded-md object-cover"
         />
       ),
@@ -47,7 +58,7 @@ export default function ReturnTable() {
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -59,12 +70,12 @@ export default function ReturnTable() {
     {
       key: "action",
       title: "Action",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Button
           onClick={() =>
             setShowReturnModal({
               open: true,
-              products: [row],
+              products: [toAssignProduct(row)],
               showQuantity: true,
             })
           }
@@ -80,17 +91,17 @@ export default function ReturnTable() {
     {
       key: "id",
       title: "Order Id",
-      render: (row: any) => <span className="text-lg">{row.id}</span>,
+      render: (row: TablesRowTypes) => <span className="text-lg">{row.id}</span>,
     },
     {
       key: "image",
       title: "Image",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <Image
           width={70}
           height={40}
-          src={row.image}
-          alt={row.name}
+          src={(row.image ?? "")}
+          alt={(row.name ?? "")}
           className="h-10 w-10 rounded-md object-cover"
         />
       ),
@@ -100,7 +111,7 @@ export default function ReturnTable() {
     {
       key: "variant",
       title: "Product Variants",
-      render: (row: any) => (
+      render: (row: TablesRowTypes) => (
         <div className="flex gap-2">
           <Badge className="bg-[#DBEAFE] text-black rounded-2xl">
             {row.variantSize}
@@ -112,7 +123,7 @@ export default function ReturnTable() {
     {
       key: "action",
       title: "Action",
-      render: (item: any) => (
+      render: (item: TablesRowTypes) => (
         <div className="flex flex-row gap-2">
           <Button
             variant="outline"
@@ -124,7 +135,7 @@ export default function ReturnTable() {
             onClick={() =>
               setShowReturnModal({
                 open: true,
-                products: [item],
+                products: [toAssignProduct(item)],
                 showQuantity: false,
               })
             }
@@ -138,7 +149,11 @@ export default function ReturnTable() {
     },
   ];
 
-  const [showReturnModal, setShowReturnModal] = useState({
+  const [showReturnModal, setShowReturnModal] = useState<{
+    showQuantity: boolean;
+    open: boolean;
+    products:AssignProduct []; // Change 'any[]' to a more specific type if available
+  }>({
     showQuantity: false,
     open: false,
     products: [],
@@ -180,12 +195,11 @@ export default function ReturnTable() {
         ))}
       </div>
 
-      <DataTable
+      <DataTable<TablesRowTypes>
         showExportButton={tab === "jobs" ? false : true}
         columns={tab === "jobs" ? columnsJobs : columnsOfView}
-        data={DUMMY_DATA}
+        data={(DUMMY_DATA as unknown) as TablesRowTypes[]}
         searchKeys={["name", "sku"]}
-        showExportButton={(tab === "jobs" ? false : true) as boolean}
         filterOptions={Object.keys(STATUS_COLORS)}
         showCustomButton={
           <div>
