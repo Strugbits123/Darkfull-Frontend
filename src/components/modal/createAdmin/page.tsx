@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-  createStore,
+  createPlatform,
+  editPlatform,
   sendStoreInvitationEmailCreateStore,
 } from "@/lib/services/platfrom.service";
 import type { ApiResponse } from "@/lib/types/auth.types";
@@ -17,18 +18,28 @@ import type { CreateStoreResponse } from "@/lib/types/store.types";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import ApiErrorHandler from "@/lib/utils/error-handler";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 const createStoreSchema = z.object({
   name: z.string().min(2, "Store name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  phoneNumber: z
+    .string()
+    .min(10, "Phone number must be at least 10 characters"),
 });
 
 type CreateStoreFormData = z.infer<typeof createStoreSchema>;
+type InvitationLite = {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+};
 const CreateAdminModal = ({
   open,
   setOpenModal,
@@ -38,7 +49,15 @@ const CreateAdminModal = ({
   open: boolean;
   setOpenModal: () => void;
   isEditModal?: boolean;
-  data: { name?: string; email?: string; firstName?: string; lastName?: string } | null;
+  data: {
+    id?: string;
+    name?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    invitations?: InvitationLite[];
+  } | null;
 }) => {
   const [loading, setIsLoading] = useState(false);
   const {
@@ -46,6 +65,7 @@ const CreateAdminModal = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    control,
   } = useForm<CreateStoreFormData>({
     resolver: zodResolver(createStoreSchema),
     defaultValues: {
@@ -53,25 +73,27 @@ const CreateAdminModal = ({
       email: "",
       firstName: "",
       lastName: "",
+      phoneNumber: "",
     },
   });
 
   async function createStoreApi(data: CreateStoreFormData) {
-    const { name, email, firstName, lastName } = data;
+    const { name, email, firstName, lastName, phoneNumber } = data;
     try {
       setIsLoading(true);
-      const response: ApiResponse<CreateStoreResponse> = await createStore({
+      const response: ApiResponse<CreateStoreResponse> = await createPlatform({
         name,
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       });
       await sendStoreInvitationEmailCreateStore({
-        storeId: response.data?.data?.store?.id as string,
+        platformId: response.data?.platform?.id as string,
         email: email,
         fullName: `${firstName} ${lastName}`,
         firstName: firstName,
         lastName: lastName,
         storeName: name,
-        role: "STORE_ADMIN",
+        role: "DIRECTOR",
+        phoneNumber: phoneNumber,
       });
       toast.success("Store created and invitation sent successfully!");
       setOpenModal();
@@ -82,24 +104,23 @@ const CreateAdminModal = ({
       setIsLoading(false);
     }
   }
-  async function editStore(data: CreateStoreFormData) {
-    const { name, email, firstName, lastName } = data;
+
+  async function editStore(value: CreateStoreFormData) {
+    const { name } = value;
     try {
       setIsLoading(true);
-      const response: ApiResponse<CreateStoreResponse> = await createStore({
-        name,
-        slug: name.toLowerCase().replace(/\s+/g, "-"),
-      });
-      await sendStoreInvitationEmailCreateStore({
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        fullName: `${firstName} ${lastName}`,
-        role: "DIRECTOR",
-        platformId: response.data?.data?.platform?.id as string,
-        // storeName: name,
-      });
-      toast.success("Store created and invitation sent successfully!");
+      if (!data?.id) {
+        toast.error("Missing platform id");
+        return;
+      }
+      const response: ApiResponse<CreateStoreResponse> = await editPlatform(
+        data.id,
+        {
+          name,
+          slug: name.toLowerCase().replace(/\s+/g, "-"),
+        }
+      );
+      toast.success("Store updated successfully!");
       setOpenModal();
     } catch (error) {
       const msg = ApiErrorHandler.getErrorMessage(error);
@@ -111,13 +132,27 @@ const CreateAdminModal = ({
 
   useEffect(() => {
     if (isEditModal) {
-      setValue("name", data?.name || "");
-      setValue("email", data?.email || "");
-      setValue("firstName", data?.firstName || "");
-      setValue("lastName", data?.lastName || "");
+      if (
+        data &&
+        data?.invitations &&
+        data?.invitations?.length > 0
+      ) {
+        setValue("name", data?.name || "");
+        setValue("email", data?.invitations?.[0].email || "");
+        setValue("firstName", data?.invitations?.[0].firstName || "");
+        setValue("lastName", data?.invitations?.[0].lastName || "");
+        setValue("phoneNumber", data?.invitations?.[0].phoneNumber || "");
+      }
     }
-  }, [isEditModal, data?.name, data?.email, data?.firstName, data?.lastName, setValue]);
-
+  }, [
+    isEditModal,
+    data?.name,
+    data?.email,
+    data?.firstName,
+    data?.lastName,
+    data?.invitations,
+    setValue,
+  ]);
   return (
     <div className="flex flex-col gap-4 p-4">
       {/* Modal 1: Manage Return Assignment */}
@@ -130,10 +165,11 @@ const CreateAdminModal = ({
 
               <div className="flex flex-col justify-items-center">
                 <DialogTitle className="text-4xl mt-5 font-semibold">
-                  {isEditModal ? "Edit" : "Create"}  Director & Send Invitation
+                  {isEditModal ? "Edit" : "Create"} Director & Send Invitation
                 </DialogTitle>
                 <p className="text-sm text-gray-500 mt-4 text-center">
-                  {isEditModal ? "Edit" : "Create"} Director (3rd Party Logistic) & Send Invitation
+                  {isEditModal ? "Edit" : "Create"} Director (3rd Party
+                  Logistic) & Send Invitation
                 </p>
               </div>
             </div>
@@ -179,7 +215,7 @@ const CreateAdminModal = ({
                   }
                 />
               </div>
-             
+
               <div className="mb-4">
                 <Label className="text-sm font-medium mb-2">Email</Label>
                 <Input
@@ -190,12 +226,31 @@ const CreateAdminModal = ({
                   {...register("email")}
                 />
               </div>
-              {/* <div className="mb-4">
-              <Label className="text-sm font-medium mb-2">
-                Enter Admin Password
-              </Label>
-              <Input className="w-full mt-2" placeholder="Admin Password" />
-            </div> */}
+              <div
+                className={`mb-4 ${errors.phoneNumber ? "border-red-500" : ""}`}
+              >
+                <Label className="text-sm font-medium mb-2">Phone Number</Label>
+                <Controller
+                  name="phoneNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <PhoneInput
+                      className={
+                        errors.phoneNumber
+                          ? "border-red-500 w-full mt-2"
+                          : "w-full mt-2"
+                      }
+                      value={field.value}
+                      onChange={(value) => field.onChange(value || "")}
+                    />
+                  )}
+                />
+                {errors.phoneNumber?.message && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.phoneNumber.message}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex justify-center px-6">
               {/* Footer Buttons Section */}

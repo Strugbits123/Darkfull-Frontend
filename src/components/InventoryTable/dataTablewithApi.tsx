@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
+import { motion, AnimatePresence } from "framer-motion"; // 👈 for animation
 
 type Column<T> = {
   key: keyof T | string;
@@ -73,7 +74,7 @@ export default function DataTableApi<T extends Record<string, unknown>>({
   const [searchData, setSearchData] = useState(search);
   const [filter, setFilter] = useState<string | undefined>();
   const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
   const perPage = perPageOptions[1];
 
@@ -200,18 +201,31 @@ export default function DataTableApi<T extends Record<string, unknown>>({
           </TableHeader>
 
           <TableBody>
-            {rows.map((row: T, i: number) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <input type="checkbox" />
-                </TableCell>
-                {columns.map((col, idx) => (
-                  <TableCell key={idx}>
-                    {col.render ? col.render(row) : String(row[col.key as keyof T] ?? "")}
+            <AnimatePresence>
+              {rows.map((row: T, i: number) => (
+                <motion.tr
+                  key={row.id as string || i}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="border-b"
+                >
+                  <TableCell>
+                    <input type="checkbox" />
                   </TableCell>
-                ))}
-              </TableRow>
-            ))}
+
+                  {columns.map((col, idx) => (
+                    <TableCell key={idx}>
+                      {col.render
+                        ? col.render(row)
+                        : String(row[col.key as keyof T] ?? "")}
+                    </TableCell>
+                  ))}
+                </motion.tr>
+              ))}
+            </AnimatePresence>
           </TableBody>
         </Table>
       )}

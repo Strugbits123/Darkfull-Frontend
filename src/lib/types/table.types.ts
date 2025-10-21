@@ -13,6 +13,15 @@ import { STATUS_COLORS } from "@/constant/product";
    status: keyof typeof STATUS_COLORS | string;
    quantity: number;
    admin_email: string;
+   invitations: {
+    email: string;
+    status:string
+    id:string
+    role:string
+    firstName:string
+    lastName:string
+    fullName:string
+   }[];
  };
 
 

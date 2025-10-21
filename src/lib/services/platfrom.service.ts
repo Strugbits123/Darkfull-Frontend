@@ -7,10 +7,17 @@ import {
   sendInvitationEmailResponse,
 } from "../types/store.types";
 
-async function createStore(
+async function createPlatform(
   data: CreateStore
 ): Promise<ApiResponse<CreateStoreResponse>> {
   const response = await apiClient.post(`/platforms`, data);
+  return response.data;
+}
+async function editPlatform(
+  platformId: string,
+  data: CreateStore
+): Promise<ApiResponse<CreateStoreResponse>> {
+  const response = await apiClient.put(`/platforms/${platformId}`, data);
   return response.data;
 }
 
@@ -39,6 +46,15 @@ export type Store = {
   updatedAt: string;
   sallaConnectedAt: string | null;
   creator: { id: string; fullName: string | null; email: string };
+  invitations: {
+    email: string;
+    status: string;
+    id: string;
+    role: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+  }[];
   stats: {
     totalUsers: number;
     totalWarehouses: number;
@@ -61,7 +77,7 @@ export type StoresQueryResult = {
 export async function getStores(
   params: GetStoresParams
 ): Promise<StoresQueryResult> {
-  const response = await apiClient.get("/stores", {
+  const response = await apiClient.get("/platforms", {
     params: {
       page: params.page ?? 1,
       limit: params.limit ?? 10,
@@ -70,9 +86,9 @@ export async function getStores(
       sortOrder: params.sortOrder ?? "desc",
     },
   });
-  const stores = response.data?.data?.stores ?? [];
+  const stores = response.data?.data?.platforms ?? [];
   const pagination = response.data?.data?.pagination ?? {};
-  return {
+  let finalData = {
     data: stores,
     total: pagination.totalCount ?? stores.length,
     currentPage: pagination.currentPage ?? 1,
@@ -81,11 +97,17 @@ export async function getStores(
     hasNextPage: pagination.hasNextPage ?? false,
     hasPreviousPage: pagination.hasPreviousPage ?? false,
   };
+  return finalData;
 }
 
-async function deleteStore(storeId: string): Promise<ApiResponse<null>> {
-  const response = await apiClient.delete(`/stores/${storeId}`);
+async function deletePlatform(platformId: string): Promise<ApiResponse<null>> {
+  const response = await apiClient.delete(`/platforms/${platformId}`);
   return response.data;
 }
 
-export { createStore, sendStoreInvitationEmailCreateStore, deleteStore };
+export {
+  createPlatform,
+  editPlatform,
+  sendStoreInvitationEmailCreateStore,
+  deletePlatform,
+};

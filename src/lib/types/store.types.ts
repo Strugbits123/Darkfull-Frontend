@@ -4,7 +4,6 @@ export interface CreateStore {
 }
 
 export interface CreateStoreResponse {
-  data: {
     platform: {
       id: string;
       name: string;
@@ -24,7 +23,6 @@ export interface CreateStoreResponse {
         pendingInvitations: number;
       };
     };
-  };
 }
 
 export interface sendInvitationEmailResponse {
@@ -46,4 +44,5 @@ export interface sendInvitationEmailParams {
   lastName: string;
   role: string;
   storeName?: string;
+  phoneNumber: string;
 }

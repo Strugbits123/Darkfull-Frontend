@@ -4,10 +4,15 @@ import { PencilIcon, Send, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateAdminModal from "@/components/modal/createAdmin/page";
 import DataTableApi from "@/components/InventoryTable/dataTablewithApi";
-import { getStores } from "@/lib/services/platfrom.service";
+import { deletePlatform, getStores } from "@/lib/services/platfrom.service";
 import type { Store } from "@/lib/services/platfrom.service";
 import { TablesRowTypes } from "@/lib/types/table.types";
+import { toast } from "sonner";
+import ApiErrorHandler from "@/lib/utils/error-handler";
+import { useQueryClient } from "@tanstack/react-query";
+import { removeByIdFromQueryCaches } from "@/lib/utils";
 const StorePage = () => {
+  const queryClient = useQueryClient();
   const storeAdminTable = [
     {
       key: "directorName",
@@ -22,19 +27,44 @@ const StorePage = () => {
     {
       key: "director_email",
       title: "Director Email",
-      render: (row: TablesRowTypes) => (
-        <span className="">{row.admin_email || "N/A"}</span>
-      ),
+      render: (row: TablesRowTypes) => {
+        return (
+          <span className="">{row?.invitations?.[0]?.email || "N/A"}</span>
+        );
+      },
+    },
+    {
+      key: "phone_number",
+      title: "Phone Number",
+      render: (row: TablesRowTypes) => {
+        return (
+          <span className="">{row?.invitations?.[0]?.email || "N/A"}</span>
+        );
+      },
     },
     {
       key: "action",
       title: "Action",
-      render: () => (
+      render: (row: TablesRowTypes) => (
         <div>
-          <button className="text-gray-600 underline bg-gray-300 rounded-md px-2 py-2 mr-3">
+          <button
+            className="text-gray-600 underline bg-gray-300 rounded-md px-2 py-2 mr-3"
+            onClick={() => {
+              setCreateAdminModalOpen({
+                open: true,
+                data: row,
+              });
+            }}
+          >
             <PencilIcon className="w-4 h-4" />
           </button>
-          <button className="text-red-600 underline bg-red-300 rounded-md px-2 py-2">
+          <button
+            className="text-red-600 underline bg-red-300 rounded-md px-2 py-2"
+            onClick={() => {
+              console.log("0000");
+              removeDirector(String(row.id));
+            }}
+          >
             <TrashIcon className="w-4 h-4" />
           </button>
         </div>
@@ -45,8 +75,8 @@ const StorePage = () => {
       title: "Director Client",
       render: () => (
         <div>
-          <button className="text-black underline bg-[#FFE9AE] rounded-md px-2 py-2 mr-3">
-            <PencilIcon className="w-4 h-4" />
+          <button className="text-black  bg-[#FFE9AE] rounded-md px-2 py-2 mr-3">
+            <p className="px-4"> View Client</p>
           </button>
         </div>
       ),
@@ -54,17 +84,43 @@ const StorePage = () => {
     {
       key: "invite",
       title: "Send Invite",
-      render: () => (
+      render: (row: TablesRowTypes) => (
         <div>
-          <Button className="bg-[#20A29A] hover:bg-[#20A29A] text-white">
+          <Button
+            className="bg-[#20A29A] hover:bg-[#20A29A] text-white"
+            disabled={row?.invitations[0]?.status === "ACCEPTED"}
+          >
             <Send className="text-white" />
-            <span>Send Invite</span>
+            <span>
+              {row?.invitations[0]?.status === "ACCEPTED"
+                ? "  Accepted"
+                : "Send Invite"}
+            </span>
           </Button>
         </div>
       ),
     },
   ];
-  const [createAdminModalOpen, setCreateAdminModalOpen] = useState({
+
+  async function removeDirector(directorId: string) {
+    try {
+      const res = await deletePlatform(directorId);
+      removeByIdFromQueryCaches<TablesRowTypes>(
+        queryClient,
+        ["users"],
+        directorId,
+        (item) => item.id as string | number
+      );
+      toast.success("Director removed successfully!");
+    } catch (error) {
+      const msg = ApiErrorHandler.getErrorMessage(error);
+      toast.error(msg);
+    }
+  }
+  const [createAdminModalOpen, setCreateAdminModalOpen] = useState<{
+    open: boolean;
+    data: any;
+  }>({
     open: false,
     data: null,
   });
@@ -83,16 +139,7 @@ const StorePage = () => {
           <span> Create New Director</span>
         </Button>
       </div>
-      {createAdminModalOpen.open && (
-        <CreateAdminModal
-          open={createAdminModalOpen.open}
-          data={createAdminModalOpen.data}
-          isEditModal={createAdminModalOpen?.data == null ? false : true}
-          setOpenModal={() =>
-            setCreateAdminModalOpen({ open: false, data: null })
-          }
-        />
-      )}
+
       <DataTableApi<TablesRowTypes>
         columns={storeAdminTable}
         queryKey={["users"]}
@@ -109,6 +156,15 @@ const StorePage = () => {
                 id: s.id,
                 name: s.name,
                 admin_email: s.creator?.email ?? "",
+                invitations: s.invitations.map((val) => ({
+                  email: val.email,
+                  status: val.status,
+                  id: val?.id,
+                  role: val?.role,
+                  firstName: val.firstName,
+                  lastName: val?.lastName,
+                  fullName: val?.fullName,
+                })),
                 // defaults to satisfy table type
                 brand: "",
                 platform: "",
@@ -131,6 +187,17 @@ const StorePage = () => {
         filterOptions={[]}
         showExportButton={false}
       />
+
+      {createAdminModalOpen.open && (
+        <CreateAdminModal
+          open={createAdminModalOpen.open}
+          data={createAdminModalOpen.data}
+          isEditModal={createAdminModalOpen?.data == null ? false : true}
+          setOpenModal={() =>
+            setCreateAdminModalOpen({ open: false, data: null })
+          }
+        />
+      )}
     </div>
   );
 };
